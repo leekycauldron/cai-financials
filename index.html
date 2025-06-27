@@ -110,14 +110,14 @@
             background-color: #1976D2;
         }
         .funding-summary {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
+            background: #e8f5e8;
+            border: 1px solid #4CAF50;
             border-radius: 8px;
             padding: 20px;
             margin: 20px 0;
         }
         .funding-summary h3 {
-            color: #856404;
+            color: #2e7d32;
             margin-top: 0;
         }
         .funding-metric {
@@ -126,7 +126,7 @@
             padding: 10px 15px;
             background: white;
             border-radius: 4px;
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid #4CAF50;
         }
         .funding-metric strong {
             display: block;
@@ -136,6 +136,17 @@
         .funding-metric span {
             color: #666;
             font-size: 0.9em;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-left-color: #ff9800;
+        }
+        .warning h3 {
+            color: #856404;
+        }
+        .warning .funding-metric {
+            border-left-color: #ff9800;
         }
     </style>
 </head>
@@ -295,13 +306,13 @@
                 <button type="button" class="add-expense-btn" onclick="addExpense()">Add New Expense</button>
             </div>
 
-            <!-- Funding & Projection Period -->
+            <!-- Available Funding & Projection Period -->
             <div class="form-section">
-                <h3>Funding & Projection Period</h3>
+                <h3>Available Funding & Projection Period</h3>
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Initial Cash/Funding ($)</label>
-                        <input type="number" id="initial-cash" value="50000">
+                        <label>Available Funding ($)</label>
+                        <input type="number" id="available-funding" value="50000">
                     </div>
                     <div class="input-group">
                         <label>Start Date</label>
@@ -319,7 +330,7 @@
 
         <!-- Funding Summary -->
         <div class="funding-summary" id="funding-summary" style="display: none;">
-            <h3>💰 Funding Requirements Summary</h3>
+            <h3>💰 Funding Analysis</h3>
             <div id="funding-metrics"></div>
         </div>
 
@@ -416,22 +427,37 @@
             const metricsDiv = document.getElementById('funding-metrics');
             
             // Calculate key metrics
-            const maxFundingRequired = Math.max(...results.FundingRequired);
-            const totalFundingRequired = results.FundingRequired.reduce((sum, val) => sum + val, 0);
+            const totalFundingUsed = results.FundingDrawdown.reduce((sum, val) => sum + val, 0);
+            const finalRemainingFunding = results.RemainingFunding[results.RemainingFunding.length - 1];
             const breakEvenMonth = results.BreakEvenMonth;
-            const finalCash = results.CumulativeCash[results.CumulativeCash.length - 1];
+            const fundingExhausted = results.FundingExhausted;
+            const fundingExhaustedMonth = results.FundingExhaustedMonth;
             
-            // Find months with negative cash flow
-            const negativeMonths = results.CumulativeCash.filter(cash => cash < 0).length;
+            // Find peak monthly drawdown
+            const maxMonthlyDrawdown = Math.max(...results.FundingDrawdown);
+            const maxDrawdownMonth = results.FundingDrawdown.indexOf(maxMonthlyDrawdown) + 1;
+            
+            // Determine if this is a warning scenario
+            const isWarning = fundingExhausted || (!breakEvenMonth && finalRemainingFunding < 10000);
+            
+            if (isWarning) {
+                summaryDiv.className = 'funding-summary warning';
+            } else {
+                summaryDiv.className = 'funding-summary';
+            }
             
             let metricsHTML = `
                 <div class="funding-metric">
-                    <strong>$${maxFundingRequired.toLocaleString()}</strong>
-                    <span>Peak Funding Required</span>
+                    <strong>$${totalFundingUsed.toLocaleString()}</strong>
+                    <span>Total Funding Used</span>
                 </div>
                 <div class="funding-metric">
-                    <strong>$${totalFundingRequired.toLocaleString()}</strong>
-                    <span>Total Funding Shortfall</span>
+                    <strong>$${finalRemainingFunding.toLocaleString()}</strong>
+                    <span>Remaining Funding</span>
+                </div>
+                <div class="funding-metric">
+                    <strong>$${maxMonthlyDrawdown.toLocaleString()}</strong>
+                    <span>Peak Monthly Drawdown (Month ${maxDrawdownMonth})</span>
                 </div>
             `;
             
@@ -451,16 +477,14 @@
                 `;
             }
             
-            metricsHTML += `
-                <div class="funding-metric">
-                    <strong>$${finalCash.toLocaleString()}</strong>
-                    <span>Final Cash Position</span>
-                </div>
-                <div class="funding-metric">
-                    <strong>${negativeMonths} months</strong>
-                    <span>Months with Negative Cash</span>
-                </div>
-            `;
+            if (fundingExhausted) {
+                metricsHTML += `
+                    <div class="funding-metric">
+                        <strong>Month ${fundingExhaustedMonth}</strong>
+                        <span>⚠️ Funding Exhausted</span>
+                    </div>
+                `;
+            }
             
             metricsDiv.innerHTML = metricsHTML;
             summaryDiv.style.display = 'block';
@@ -489,8 +513,8 @@
                         borderColor: 'rgb(255, 99, 132)',
                         tension: 0.1
                     }, {
-                        label: 'Gross Profit',
-                        data: results.GrossProfit,
+                        label: 'Monthly Cash Flow',
+                        data: results.MonthlyCashFlow,
                         borderColor: 'rgb(54, 162, 235)',
                         tension: 0.1
                     }]
@@ -540,28 +564,28 @@
                 }
             });
 
-            // Cash Flow Chart
+            // Cash Flow Chart with Funding
             const ctxCashFlow = document.getElementById('cashFlowChart').getContext('2d');
             charts.cashFlowChart = new Chart(ctxCashFlow, {
                 type: 'line',
                 data: {
                     labels: results.Date,
                     datasets: [{
-                        label: 'Monthly Cash Flow',
-                        data: results.CashFlow,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        label: 'Monthly Cash Flow (Before Funding)',
+                        data: results.MonthlyCashFlow,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
                         tension: 0.1,
                         fill: true
                     }, {
-                        label: 'Cumulative Cash',
-                        data: results.CumulativeCash,
-                        borderColor: 'rgb(54, 162, 235)',
+                        label: 'Cash Position (After Funding)',
+                        data: results.CashPosition,
+                        borderColor: 'rgb(75, 192, 192)',
                         tension: 0.1
                     }, {
                         label: 'Break-Even Line',
                         data: new Array(results.Date.length).fill(0),
-                        borderColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(54, 162, 235)',
                         borderDash: [5, 5],
                         tension: 0.1
                     }]
@@ -571,24 +595,32 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Cash Flow Analysis'
+                            text: 'Cash Flow Analysis with Funding Support'
                         }
                     }
                 }
             });
 
-            // Funding Requirements Chart
+            // Funding Drawdown Chart
             const ctxFunding = document.getElementById('fundingChart').getContext('2d');
             charts.fundingChart = new Chart(ctxFunding, {
                 type: 'bar',
                 data: {
                     labels: results.Date,
                     datasets: [{
-                        label: 'Funding Required',
-                        data: results.FundingRequired,
-                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                        borderColor: 'rgb(255, 99, 132)',
-                        borderWidth: 1
+                        label: 'Monthly Funding Drawdown',
+                        data: results.FundingDrawdown,
+                        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                        borderColor: 'rgb(255, 159, 64)',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Remaining Funding',
+                        data: results.RemainingFunding,
+                        type: 'line',
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1,
+                        yAxisID: 'y1'
                     }]
                 },
                 options: {
@@ -596,12 +628,32 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Monthly Funding Requirements'
+                            text: 'Funding Drawdown & Remaining Balance'
                         }
                     },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Monthly Drawdown ($)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Remaining Funding ($)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
                         }
                     }
                 }
@@ -700,7 +752,7 @@
                 variableCosts,
                 getInputValue('start-date'),
                 Number(getInputValue('num-months')),
-                Number(getInputValue('initial-cash'))
+                Number(getInputValue('available-funding'))
             );
 
             // Calculate and update charts

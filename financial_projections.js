@@ -20,13 +20,13 @@ class SubscriptionTier {
 }
 
 class FinancialProjection {
-    constructor(subscriptionTiers, monthlyFixedExpenses, variableCostStructure, startDate, numMonths, initialCash = 0) {
+    constructor(subscriptionTiers, monthlyFixedExpenses, variableCostStructure, startDate, numMonths, availableFunding = 0) {
         this.subscriptionTiers = subscriptionTiers;
         this.monthlyFixedExpenses = monthlyFixedExpenses;
         this.variableCostStructure = variableCostStructure;
         this.startDate = new Date(startDate);
         this.numMonths = numMonths;
-        this.initialCash = initialCash;
+        this.availableFunding = availableFunding;
         this.results = null;
     }
 
@@ -63,9 +63,12 @@ class FinancialProjection {
             GrossProfit: new Array(this.numMonths).fill(0),
             TotalMinutesUsed: new Array(this.numMonths).fill(0),
             OverageMinutes: new Array(this.numMonths).fill(0),
-            CashFlow: new Array(this.numMonths).fill(0),
-            CumulativeCash: new Array(this.numMonths).fill(0),
-            FundingRequired: new Array(this.numMonths).fill(0),
+            MonthlyCashFlow: new Array(this.numMonths).fill(0),
+            FundingDrawdown: new Array(this.numMonths).fill(0),
+            RemainingFunding: new Array(this.numMonths).fill(0),
+            CashPosition: new Array(this.numMonths).fill(0),
+            FundingExhausted: false,
+            FundingExhaustedMonth: null,
             BreakEvenMonth: null
         };
 
@@ -125,27 +128,47 @@ class FinancialProjection {
             rev - results.TotalExpenses[i]
         );
 
-        // Calculate cash flow and funding requirements
-        let cumulativeCash = this.initialCash;
+        // Calculate cash flow with funding drawdown
+        let remainingFunding = this.availableFunding;
         let breakEvenFound = false;
 
         for (let month = 0; month < this.numMonths; month++) {
             const monthlyProfit = results.GrossProfit[month];
-            results.CashFlow[month] = monthlyProfit;
+            results.MonthlyCashFlow[month] = monthlyProfit;
             
-            cumulativeCash += monthlyProfit;
-            results.CumulativeCash[month] = cumulativeCash;
-            
-            // Calculate funding required to maintain positive cash balance
-            if (cumulativeCash < 0) {
-                results.FundingRequired[month] = Math.abs(cumulativeCash);
+            // If we have negative cash flow, draw from available funding
+            if (monthlyProfit < 0) {
+                const fundingNeeded = Math.abs(monthlyProfit);
+                
+                if (remainingFunding >= fundingNeeded) {
+                    // We have enough funding to cover the shortfall
+                    results.FundingDrawdown[month] = fundingNeeded;
+                    remainingFunding -= fundingNeeded;
+                    results.CashPosition[month] = 0; // Break even with funding
+                } else {
+                    // Not enough funding to cover the shortfall
+                    results.FundingDrawdown[month] = remainingFunding;
+                    results.CashPosition[month] = monthlyProfit + remainingFunding; // Still negative
+                    remainingFunding = 0;
+                    
+                    if (!results.FundingExhausted) {
+                        results.FundingExhausted = true;
+                        results.FundingExhaustedMonth = month + 1; // 1-indexed for display
+                    }
+                }
             } else {
-                results.FundingRequired[month] = 0;
-                if (!breakEvenFound && month > 0) {
+                // Positive cash flow - no funding needed
+                results.FundingDrawdown[month] = 0;
+                results.CashPosition[month] = monthlyProfit;
+                
+                // Check for break-even (first month with positive cash flow)
+                if (!breakEvenFound) {
                     results.BreakEvenMonth = month + 1; // 1-indexed for display
                     breakEvenFound = true;
                 }
             }
+            
+            results.RemainingFunding[month] = remainingFunding;
         }
 
         this.results = results;
