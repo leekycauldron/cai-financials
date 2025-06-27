@@ -20,12 +20,13 @@ class SubscriptionTier {
 }
 
 class FinancialProjection {
-    constructor(subscriptionTiers, monthlyFixedExpenses, variableCostStructure, startDate, numMonths) {
+    constructor(subscriptionTiers, monthlyFixedExpenses, variableCostStructure, startDate, numMonths, initialCash = 0) {
         this.subscriptionTiers = subscriptionTiers;
         this.monthlyFixedExpenses = monthlyFixedExpenses;
         this.variableCostStructure = variableCostStructure;
         this.startDate = new Date(startDate);
         this.numMonths = numMonths;
+        this.initialCash = initialCash;
         this.results = null;
     }
 
@@ -61,7 +62,11 @@ class FinancialProjection {
             TotalExpenses: new Array(this.numMonths).fill(0),
             GrossProfit: new Array(this.numMonths).fill(0),
             TotalMinutesUsed: new Array(this.numMonths).fill(0),
-            OverageMinutes: new Array(this.numMonths).fill(0)
+            OverageMinutes: new Array(this.numMonths).fill(0),
+            CashFlow: new Array(this.numMonths).fill(0),
+            CumulativeCash: new Array(this.numMonths).fill(0),
+            FundingRequired: new Array(this.numMonths).fill(0),
+            BreakEvenMonth: null
         };
 
         // Calculate per tier metrics
@@ -120,10 +125,33 @@ class FinancialProjection {
             rev - results.TotalExpenses[i]
         );
 
+        // Calculate cash flow and funding requirements
+        let cumulativeCash = this.initialCash;
+        let breakEvenFound = false;
+
+        for (let month = 0; month < this.numMonths; month++) {
+            const monthlyProfit = results.GrossProfit[month];
+            results.CashFlow[month] = monthlyProfit;
+            
+            cumulativeCash += monthlyProfit;
+            results.CumulativeCash[month] = cumulativeCash;
+            
+            // Calculate funding required to maintain positive cash balance
+            if (cumulativeCash < 0) {
+                results.FundingRequired[month] = Math.abs(cumulativeCash);
+            } else {
+                results.FundingRequired[month] = 0;
+                if (!breakEvenFound && month > 0) {
+                    results.BreakEvenMonth = month + 1; // 1-indexed for display
+                    breakEvenFound = true;
+                }
+            }
+        }
+
         this.results = results;
         return results;
     }
 }
 
 // Export the classes for use in other files
-export { VariableCostStructure, SubscriptionTier, FinancialProjection }; 
+export { VariableCostStructure, SubscriptionTier, FinancialProjection };

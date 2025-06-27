@@ -78,9 +78,64 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin: 5px;
         }
         button:hover {
             background-color: #45a049;
+        }
+        .expense-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .expense-item input {
+            margin: 0;
+        }
+        .remove-btn {
+            background-color: #ff4444;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        .remove-btn:hover {
+            background-color: #cc0000;
+        }
+        .add-expense-btn {
+            background-color: #2196F3;
+        }
+        .add-expense-btn:hover {
+            background-color: #1976D2;
+        }
+        .funding-summary {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .funding-summary h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+        .funding-metric {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+        }
+        .funding-metric strong {
+            display: block;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .funding-metric span {
+            color: #666;
+            font-size: 0.9em;
         }
     </style>
 </head>
@@ -180,9 +235,9 @@
                 </div>
             </div>
 
-            <!-- Costs Structure -->
+            <!-- Variable Costs Structure -->
             <div class="form-section">
-                <h3>Cost Structure</h3>
+                <h3>Variable Cost Structure</h3>
                 <div class="form-group">
                     <div class="input-group">
                         <label>Monthly Flat Fee ($)</label>
@@ -196,17 +251,58 @@
                         <label>Overage Cost per Minute ($)</label>
                         <input type="number" id="overage-cost" value="0.11" step="0.01">
                     </div>
-                    <div class="input-group">
-                        <label>Monthly Advertising Cost ($)</label>
-                        <input type="number" id="advertising-cost" value="5000">
-                    </div>
                 </div>
             </div>
 
-            <!-- Projection Period -->
+            <!-- Monthly Fixed Expenses -->
             <div class="form-section">
-                <h3>Projection Period</h3>
+                <h3>Monthly Fixed Expenses</h3>
+                <div id="expenses-container">
+                    <div class="expense-item">
+                        <div class="input-group">
+                            <label>Expense Name</label>
+                            <input type="text" value="Advertising" class="expense-name">
+                        </div>
+                        <div class="input-group">
+                            <label>Monthly Cost ($)</label>
+                            <input type="number" value="5000" class="expense-cost">
+                        </div>
+                        <button type="button" class="remove-btn" onclick="removeExpense(this)">Remove</button>
+                    </div>
+                    <div class="expense-item">
+                        <div class="input-group">
+                            <label>Expense Name</label>
+                            <input type="text" value="Salaries" class="expense-name">
+                        </div>
+                        <div class="input-group">
+                            <label>Monthly Cost ($)</label>
+                            <input type="number" value="15000" class="expense-cost">
+                        </div>
+                        <button type="button" class="remove-btn" onclick="removeExpense(this)">Remove</button>
+                    </div>
+                    <div class="expense-item">
+                        <div class="input-group">
+                            <label>Expense Name</label>
+                            <input type="text" value="Office Lease" class="expense-name">
+                        </div>
+                        <div class="input-group">
+                            <label>Monthly Cost ($)</label>
+                            <input type="number" value="3000" class="expense-cost">
+                        </div>
+                        <button type="button" class="remove-btn" onclick="removeExpense(this)">Remove</button>
+                    </div>
+                </div>
+                <button type="button" class="add-expense-btn" onclick="addExpense()">Add New Expense</button>
+            </div>
+
+            <!-- Funding & Projection Period -->
+            <div class="form-section">
+                <h3>Funding & Projection Period</h3>
                 <div class="form-group">
+                    <div class="input-group">
+                        <label>Initial Cash/Funding ($)</label>
+                        <input type="number" id="initial-cash" value="50000">
+                    </div>
                     <div class="input-group">
                         <label>Start Date</label>
                         <input type="date" id="start-date" value="2025-09-01">
@@ -221,12 +317,24 @@
             <button onclick="updateProjections()">Update Projections</button>
         </div>
 
+        <!-- Funding Summary -->
+        <div class="funding-summary" id="funding-summary" style="display: none;">
+            <h3>💰 Funding Requirements Summary</h3>
+            <div id="funding-metrics"></div>
+        </div>
+
         <div class="charts-wrapper">
             <div class="chart-container">
                 <canvas id="financialMetrics"></canvas>
             </div>
             <div class="chart-container">
                 <canvas id="expenseBreakdown"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="cashFlowChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="fundingChart"></canvas>
             </div>
             <div class="chart-container">
                 <canvas id="userCounts"></canvas>
@@ -243,6 +351,8 @@
         let charts = {
             financialMetrics: null,
             expenseBreakdown: null,
+            cashFlowChart: null,
+            fundingChart: null,
             userCounts: null,
             minutesUsage: null
         };
@@ -261,6 +371,99 @@
                 Number(getInputValue(`${prefix.toLowerCase()}-growth`)) / 100,
                 Number(getInputValue(`${prefix.toLowerCase()}-usage`)) / 100
             );
+        }
+
+        function getExpenses() {
+            const expenses = {};
+            const expenseItems = document.querySelectorAll('.expense-item');
+            
+            expenseItems.forEach(item => {
+                const name = item.querySelector('.expense-name').value.trim();
+                const cost = Number(item.querySelector('.expense-cost').value);
+                if (name && cost >= 0) {
+                    expenses[name] = cost;
+                }
+            });
+            
+            return expenses;
+        }
+
+        window.addExpense = function() {
+            const container = document.getElementById('expenses-container');
+            const expenseItem = document.createElement('div');
+            expenseItem.className = 'expense-item';
+            expenseItem.innerHTML = `
+                <div class="input-group">
+                    <label>Expense Name</label>
+                    <input type="text" placeholder="Enter expense name" class="expense-name">
+                </div>
+                <div class="input-group">
+                    <label>Monthly Cost ($)</label>
+                    <input type="number" value="0" class="expense-cost">
+                </div>
+                <button type="button" class="remove-btn" onclick="removeExpense(this)">Remove</button>
+            `;
+            container.appendChild(expenseItem);
+        };
+
+        window.removeExpense = function(button) {
+            const expenseItem = button.parentElement;
+            expenseItem.remove();
+        };
+
+        function updateFundingSummary(results) {
+            const summaryDiv = document.getElementById('funding-summary');
+            const metricsDiv = document.getElementById('funding-metrics');
+            
+            // Calculate key metrics
+            const maxFundingRequired = Math.max(...results.FundingRequired);
+            const totalFundingRequired = results.FundingRequired.reduce((sum, val) => sum + val, 0);
+            const breakEvenMonth = results.BreakEvenMonth;
+            const finalCash = results.CumulativeCash[results.CumulativeCash.length - 1];
+            
+            // Find months with negative cash flow
+            const negativeMonths = results.CumulativeCash.filter(cash => cash < 0).length;
+            
+            let metricsHTML = `
+                <div class="funding-metric">
+                    <strong>$${maxFundingRequired.toLocaleString()}</strong>
+                    <span>Peak Funding Required</span>
+                </div>
+                <div class="funding-metric">
+                    <strong>$${totalFundingRequired.toLocaleString()}</strong>
+                    <span>Total Funding Shortfall</span>
+                </div>
+            `;
+            
+            if (breakEvenMonth) {
+                metricsHTML += `
+                    <div class="funding-metric">
+                        <strong>Month ${breakEvenMonth}</strong>
+                        <span>Break-Even Point</span>
+                    </div>
+                `;
+            } else {
+                metricsHTML += `
+                    <div class="funding-metric">
+                        <strong>Not Reached</strong>
+                        <span>Break-Even Point</span>
+                    </div>
+                `;
+            }
+            
+            metricsHTML += `
+                <div class="funding-metric">
+                    <strong>$${finalCash.toLocaleString()}</strong>
+                    <span>Final Cash Position</span>
+                </div>
+                <div class="funding-metric">
+                    <strong>${negativeMonths} months</strong>
+                    <span>Months with Negative Cash</span>
+                </div>
+            `;
+            
+            metricsDiv.innerHTML = metricsHTML;
+            summaryDiv.style.display = 'block';
         }
 
         function createCharts(results, variableCosts) {
@@ -332,6 +535,73 @@
                         title: {
                             display: true,
                             text: 'Expense Breakdown'
+                        }
+                    }
+                }
+            });
+
+            // Cash Flow Chart
+            const ctxCashFlow = document.getElementById('cashFlowChart').getContext('2d');
+            charts.cashFlowChart = new Chart(ctxCashFlow, {
+                type: 'line',
+                data: {
+                    labels: results.Date,
+                    datasets: [{
+                        label: 'Monthly Cash Flow',
+                        data: results.CashFlow,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }, {
+                        label: 'Cumulative Cash',
+                        data: results.CumulativeCash,
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    }, {
+                        label: 'Break-Even Line',
+                        data: new Array(results.Date.length).fill(0),
+                        borderColor: 'rgb(255, 99, 132)',
+                        borderDash: [5, 5],
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Cash Flow Analysis'
+                        }
+                    }
+                }
+            });
+
+            // Funding Requirements Chart
+            const ctxFunding = document.getElementById('fundingChart').getContext('2d');
+            charts.fundingChart = new Chart(ctxFunding, {
+                type: 'bar',
+                data: {
+                    labels: results.Date,
+                    datasets: [{
+                        label: 'Funding Required',
+                        data: results.FundingRequired,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Funding Requirements'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
                     }
                 }
@@ -420,10 +690,8 @@
                 Number(getInputValue('overage-cost'))
             );
 
-            // Create monthly fixed expenses
-            const monthlyFixedExpenses = {
-                "Advertising": Number(getInputValue('advertising-cost'))
-            };
+            // Get monthly fixed expenses from dynamic form
+            const monthlyFixedExpenses = getExpenses();
 
             // Create projection model
             const projection = new FinancialProjection(
@@ -431,16 +699,18 @@
                 monthlyFixedExpenses,
                 variableCosts,
                 getInputValue('start-date'),
-                Number(getInputValue('num-months'))
+                Number(getInputValue('num-months')),
+                Number(getInputValue('initial-cash'))
             );
 
             // Calculate and update charts
             const results = projection.calculateProjections();
             createCharts(results, variableCosts);
+            updateFundingSummary(results);
         };
 
         // Initial chart creation
         updateProjections();
     </script>
 </body>
-</html> 
+</html>
