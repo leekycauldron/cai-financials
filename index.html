@@ -148,6 +148,34 @@
         .warning .funding-metric {
             border-left-color: #ff9800;
         }
+        .burn-rate-summary {
+            background: #f3e5f5;
+            border: 1px solid #9c27b0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .burn-rate-summary h3 {
+            color: #6a1b9a;
+            margin-top: 0;
+        }
+        .burn-rate-metric {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #9c27b0;
+        }
+        .burn-rate-metric strong {
+            display: block;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .burn-rate-metric span {
+            color: #666;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -246,6 +274,20 @@
                 </div>
             </div>
 
+            <!-- Customer Acquisition Cost -->
+            <div class="form-section">
+                <h3>Customer Acquisition Cost (CAC)</h3>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Average CAC per New User ($)</label>
+                        <input type="number" id="cac-per-user" value="25" step="0.01">
+                    </div>
+                </div>
+                <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
+                    This cost will be applied for each new user acquired across all subscription tiers.
+                </p>
+            </div>
+
             <!-- Variable Costs Structure -->
             <div class="form-section">
                 <h3>Variable Cost Structure</h3>
@@ -306,6 +348,20 @@
                 <button type="button" class="add-expense-btn" onclick="addExpense()">Add New Expense</button>
             </div>
 
+            <!-- One-Time Startup Costs -->
+            <div class="form-section">
+                <h3>One-Time Startup Costs</h3>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Initial Legal & Setup Costs ($)</label>
+                        <input type="number" id="startup-costs" value="10000">
+                    </div>
+                </div>
+                <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
+                    These are one-time costs incurred at the beginning (legal fees, initial licenses, equipment, etc.)
+                </p>
+            </div>
+
             <!-- Available Funding & Projection Period -->
             <div class="form-section">
                 <h3>Available Funding & Projection Period</h3>
@@ -328,6 +384,12 @@
             <button onclick="updateProjections()">Update Projections</button>
         </div>
 
+        <!-- Burn Rate Summary -->
+        <div class="burn-rate-summary" id="burn-rate-summary" style="display: none;">
+            <h3>🔥 Burn Rate Analysis</h3>
+            <div id="burn-rate-metrics"></div>
+        </div>
+
         <!-- Funding Summary -->
         <div class="funding-summary" id="funding-summary" style="display: none;">
             <h3>💰 Funding Analysis</h3>
@@ -342,6 +404,9 @@
                 <canvas id="expenseBreakdown"></canvas>
             </div>
             <div class="chart-container">
+                <canvas id="burnRateChart"></canvas>
+            </div>
+            <div class="chart-container">
                 <canvas id="cashFlowChart"></canvas>
             </div>
             <div class="chart-container">
@@ -353,6 +418,9 @@
             <div class="chart-container">
                 <canvas id="minutesUsage"></canvas>
             </div>
+            <div class="chart-container">
+                <canvas id="cacChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -362,10 +430,12 @@
         let charts = {
             financialMetrics: null,
             expenseBreakdown: null,
+            burnRateChart: null,
             cashFlowChart: null,
             fundingChart: null,
             userCounts: null,
-            minutesUsage: null
+            minutesUsage: null,
+            cacChart: null
         };
 
         function getInputValue(id) {
@@ -421,6 +491,55 @@
             const expenseItem = button.parentElement;
             expenseItem.remove();
         };
+
+        function updateBurnRateSummary(results) {
+            const summaryDiv = document.getElementById('burn-rate-summary');
+            const metricsDiv = document.getElementById('burn-rate-metrics');
+            
+            // Calculate burn rate metrics
+            const avgBurnRate = results.BurnRate.reduce((sum, val) => sum + val, 0) / results.BurnRate.length;
+            const maxBurnRate = Math.max(...results.BurnRate);
+            const minBurnRate = Math.min(...results.BurnRate);
+            const finalBurnRate = results.BurnRate[results.BurnRate.length - 1];
+            
+            // Find when burn rate becomes positive (if ever)
+            const positiveMonths = results.BurnRate.filter(rate => rate > 0).length;
+            const firstPositiveMonth = results.BurnRate.findIndex(rate => rate > 0) + 1;
+            
+            let metricsHTML = `
+                <div class="burn-rate-metric">
+                    <strong>$${avgBurnRate.toLocaleString()}</strong>
+                    <span>Average Monthly Burn Rate</span>
+                </div>
+                <div class="burn-rate-metric">
+                    <strong>$${maxBurnRate.toLocaleString()}</strong>
+                    <span>Peak Monthly Burn Rate</span>
+                </div>
+                <div class="burn-rate-metric">
+                    <strong>$${finalBurnRate.toLocaleString()}</strong>
+                    <span>Final Month Burn Rate</span>
+                </div>
+            `;
+            
+            if (firstPositiveMonth > 0) {
+                metricsHTML += `
+                    <div class="burn-rate-metric">
+                        <strong>Month ${firstPositiveMonth}</strong>
+                        <span>First Positive Cash Flow</span>
+                    </div>
+                `;
+            }
+            
+            metricsHTML += `
+                <div class="burn-rate-metric">
+                    <strong>${positiveMonths} months</strong>
+                    <span>Months with Positive Cash Flow</span>
+                </div>
+            `;
+            
+            metricsDiv.innerHTML = metricsHTML;
+            summaryDiv.style.display = 'block';
+        }
 
         function updateFundingSummary(results) {
             const summaryDiv = document.getElementById('funding-summary');
@@ -551,6 +670,11 @@
                         data: results.OverageCosts,
                         borderColor: 'rgb(255, 205, 86)',
                         tension: 0.1
+                    }, {
+                        label: 'CAC Costs',
+                        data: results.CACCosts,
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
                     }]
                 },
                 options: {
@@ -559,6 +683,46 @@
                         title: {
                             display: true,
                             text: 'Expense Breakdown'
+                        }
+                    }
+                }
+            });
+
+            // Burn Rate Chart
+            const ctxBurnRate = document.getElementById('burnRateChart').getContext('2d');
+            charts.burnRateChart = new Chart(ctxBurnRate, {
+                type: 'line',
+                data: {
+                    labels: results.Date,
+                    datasets: [{
+                        label: 'Monthly Burn Rate',
+                        data: results.BurnRate,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }, {
+                        label: 'Break-Even Line',
+                        data: new Array(results.Date.length).fill(0),
+                        borderColor: 'rgb(54, 162, 235)',
+                        borderDash: [5, 5],
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Burn Rate Analysis'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Burn Rate ($)'
+                            }
                         }
                     }
                 }
@@ -727,6 +891,64 @@
                     }
                 }
             });
+
+            // CAC Chart
+            const ctxCAC = document.getElementById('cacChart').getContext('2d');
+            charts.cacChart = new Chart(ctxCAC, {
+                type: 'bar',
+                data: {
+                    labels: results.Date,
+                    datasets: [{
+                        label: 'New Users Acquired',
+                        data: results.NewUsersAcquired,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgb(75, 192, 192)',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'CAC Costs',
+                        data: results.CACCosts,
+                        type: 'line',
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Customer Acquisition Cost Analysis'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'New Users'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'CAC Costs ($)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
         }
 
         window.updateProjections = function() {
@@ -752,12 +974,15 @@
                 variableCosts,
                 getInputValue('start-date'),
                 Number(getInputValue('num-months')),
-                Number(getInputValue('available-funding'))
+                Number(getInputValue('available-funding')),
+                Number(getInputValue('cac-per-user')),
+                Number(getInputValue('startup-costs'))
             );
 
             // Calculate and update charts
             const results = projection.calculateProjections();
             createCharts(results, variableCosts);
+            updateBurnRateSummary(results);
             updateFundingSummary(results);
         };
 

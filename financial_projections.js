@@ -20,13 +20,15 @@ class SubscriptionTier {
 }
 
 class FinancialProjection {
-    constructor(subscriptionTiers, monthlyFixedExpenses, variableCostStructure, startDate, numMonths, availableFunding = 0) {
+    constructor(subscriptionTiers, monthlyFixedExpenses, variableCostStructure, startDate, numMonths, availableFunding = 0, cacPerUser = 0, startupCosts = 0) {
         this.subscriptionTiers = subscriptionTiers;
         this.monthlyFixedExpenses = monthlyFixedExpenses;
         this.variableCostStructure = variableCostStructure;
         this.startDate = new Date(startDate);
         this.numMonths = numMonths;
         this.availableFunding = availableFunding;
+        this.cacPerUser = cacPerUser;
+        this.startupCosts = startupCosts;
         this.results = null;
     }
 
@@ -58,12 +60,15 @@ class FinancialProjection {
             FixedExpenses: new Array(this.numMonths).fill(0),
             FlatFee: new Array(this.numMonths).fill(0),
             OverageCosts: new Array(this.numMonths).fill(0),
+            CACCosts: new Array(this.numMonths).fill(0),
             TotalVariableCosts: new Array(this.numMonths).fill(0),
             TotalExpenses: new Array(this.numMonths).fill(0),
             GrossProfit: new Array(this.numMonths).fill(0),
             TotalMinutesUsed: new Array(this.numMonths).fill(0),
             OverageMinutes: new Array(this.numMonths).fill(0),
+            NewUsersAcquired: new Array(this.numMonths).fill(0),
             MonthlyCashFlow: new Array(this.numMonths).fill(0),
+            BurnRate: new Array(this.numMonths).fill(0),
             FundingDrawdown: new Array(this.numMonths).fill(0),
             RemainingFunding: new Array(this.numMonths).fill(0),
             CashPosition: new Array(this.numMonths).fill(0),
@@ -72,11 +77,12 @@ class FinancialProjection {
             BreakEvenMonth: null
         };
 
-        // Calculate per tier metrics
+        // Calculate per tier metrics and track new users
         this.subscriptionTiers.forEach(tier => {
             const tierUsers = [];
             const tierRevenue = [];
             const tierMinutes = [];
+            const tierNewUsers = [];
             let currentUsers = tier.initialUserCount;
 
             // Calculate monthly users and revenue for this tier
@@ -93,26 +99,34 @@ class FinancialProjection {
                 tierUsers.push(currentUsers);
                 tierRevenue.push(monthlyRevenue);
                 tierMinutes.push(monthlyMinutesUsed);
+                tierNewUsers.push(newUsers);
 
                 // Add to totals
                 results.TotalRevenue[month] += monthlyRevenue;
                 results.TotalMinutesUsed[month] += monthlyMinutesUsed;
+                results.NewUsersAcquired[month] += newUsers;
             }
 
             // Add tier-specific metrics to results
             results[`${tier.name}Users`] = tierUsers;
             results[`${tier.name}Revenue`] = tierRevenue;
             results[`${tier.name}Minutes`] = tierMinutes;
+            results[`${tier.name}NewUsers`] = tierNewUsers;
         });
 
-        // Calculate variable costs
+        // Calculate variable costs including CAC
         for (let month = 0; month < this.numMonths; month++) {
             const [flatFee, overageCost, overageMinutes] = this.calculateVariableCosts(
                 results.TotalMinutesUsed[month]
             );
             results.FlatFee[month] = flatFee;
             results.OverageCosts[month] = overageCost;
-            results.TotalVariableCosts[month] = flatFee + overageCost;
+            
+            // Calculate CAC costs
+            const cacCost = results.NewUsersAcquired[month] * this.cacPerUser;
+            results.CACCosts[month] = cacCost;
+            
+            results.TotalVariableCosts[month] = flatFee + overageCost + cacCost;
             results.OverageMinutes[month] = overageMinutes;
         }
 
@@ -128,13 +142,19 @@ class FinancialProjection {
             rev - results.TotalExpenses[i]
         );
 
-        // Calculate cash flow with funding drawdown
-        let remainingFunding = this.availableFunding;
-        let breakEvenFound = false;
-
+        // Calculate monthly cash flow (burn rate)
         for (let month = 0; month < this.numMonths; month++) {
             const monthlyProfit = results.GrossProfit[month];
             results.MonthlyCashFlow[month] = monthlyProfit;
+            results.BurnRate[month] = -monthlyProfit; // Negative cash flow = positive burn rate
+        }
+
+        // Calculate cash flow with funding drawdown (accounting for startup costs)
+        let remainingFunding = this.availableFunding - this.startupCosts;
+        let breakEvenFound = false;
+
+        for (let month = 0; month < this.numMonths; month++) {
+            const monthlyProfit = results.MonthlyCashFlow[month];
             
             // If we have negative cash flow, draw from available funding
             if (monthlyProfit < 0) {
