@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Projections</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .chart-container {
+            width: 45%;
+            margin: 20px;
+            display: inline-block;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .charts-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            margin: 20px 0;
+        }
+        .forms-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Financial Projections Dashboard</h1>
+        
+        <div class="forms-container">
+            <h2>Projection Parameters</h2>
+            
+            <!-- Subscription Tiers -->
+            <div class="form-section">
+                <h3>Subscription Tiers</h3>
+                
+                <!-- Acquaintance Tier -->
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Acquaintance - Minute Quota</label>
+                        <input type="number" id="acquaintance-quota" value="5">
+                    </div>
+                    <div class="input-group">
+                        <label>Price per Month ($)</label>
+                        <input type="number" id="acquaintance-price" value="10">
+                    </div>
+                    <div class="input-group">
+                        <label>Initial Users</label>
+                        <input type="number" id="acquaintance-users" value="100">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Churn Rate (%)</label>
+                        <input type="number" id="acquaintance-churn" value="5" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Growth Rate (%)</label>
+                        <input type="number" id="acquaintance-growth" value="10" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Usage Rate (%)</label>
+                        <input type="number" id="acquaintance-usage" value="75" step="1">
+                    </div>
+                </div>
+
+                <!-- Friend Tier -->
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Friend - Minute Quota</label>
+                        <input type="number" id="friend-quota" value="15">
+                    </div>
+                    <div class="input-group">
+                        <label>Price per Month ($)</label>
+                        <input type="number" id="friend-price" value="40">
+                    </div>
+                    <div class="input-group">
+                        <label>Initial Users</label>
+                        <input type="number" id="friend-users" value="75">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Churn Rate (%)</label>
+                        <input type="number" id="friend-churn" value="3.5" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Growth Rate (%)</label>
+                        <input type="number" id="friend-growth" value="6.5" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Usage Rate (%)</label>
+                        <input type="number" id="friend-usage" value="85" step="1">
+                    </div>
+                </div>
+
+                <!-- Best Friend Tier -->
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Best Friend - Minute Quota</label>
+                        <input type="number" id="bestfriend-quota" value="30">
+                    </div>
+                    <div class="input-group">
+                        <label>Price per Month ($)</label>
+                        <input type="number" id="bestfriend-price" value="70">
+                    </div>
+                    <div class="input-group">
+                        <label>Initial Users</label>
+                        <input type="number" id="bestfriend-users" value="50">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Churn Rate (%)</label>
+                        <input type="number" id="bestfriend-churn" value="3" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Growth Rate (%)</label>
+                        <input type="number" id="bestfriend-growth" value="5" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Usage Rate (%)</label>
+                        <input type="number" id="bestfriend-usage" value="90" step="1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Costs Structure -->
+            <div class="form-section">
+                <h3>Cost Structure</h3>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Monthly Flat Fee ($)</label>
+                        <input type="number" id="flat-fee" value="1100">
+                    </div>
+                    <div class="input-group">
+                        <label>Included Minutes</label>
+                        <input type="number" id="included-minutes" value="1100">
+                    </div>
+                    <div class="input-group">
+                        <label>Overage Cost per Minute ($)</label>
+                        <input type="number" id="overage-cost" value="0.11" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Advertising Cost ($)</label>
+                        <input type="number" id="advertising-cost" value="5000">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projection Period -->
+            <div class="form-section">
+                <h3>Projection Period</h3>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label>Start Date</label>
+                        <input type="date" id="start-date" value="2025-09-01">
+                    </div>
+                    <div class="input-group">
+                        <label>Number of Months</label>
+                        <input type="number" id="num-months" value="24" min="1" max="60">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="updateProjections()">Update Projections</button>
+        </div>
+
+        <div class="charts-wrapper">
+            <div class="chart-container">
+                <canvas id="financialMetrics"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="expenseBreakdown"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="userCounts"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="minutesUsage"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { VariableCostStructure, SubscriptionTier, FinancialProjection } from './financial_projections.js';
+
+        let charts = {
+            financialMetrics: null,
+            expenseBreakdown: null,
+            userCounts: null,
+            minutesUsage: null
+        };
+
+        function getInputValue(id) {
+            return document.getElementById(id).value;
+        }
+
+        function createSubscriptionTier(prefix) {
+            return new SubscriptionTier(
+                prefix,
+                Number(getInputValue(`${prefix.toLowerCase()}-quota`)),
+                Number(getInputValue(`${prefix.toLowerCase()}-price`)),
+                Number(getInputValue(`${prefix.toLowerCase()}-users`)),
+                Number(getInputValue(`${prefix.toLowerCase()}-churn`)) / 100,
+                Number(getInputValue(`${prefix.toLowerCase()}-growth`)) / 100,
+                Number(getInputValue(`${prefix.toLowerCase()}-usage`)) / 100
+            );
+        }
+
+        function createCharts(results, variableCosts) {
+            // Destroy existing charts
+            Object.values(charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+
+            // Financial Metrics Chart
+            const ctxFinancial = document.getElementById('financialMetrics').getContext('2d');
+            charts.financialMetrics = new Chart(ctxFinancial, {
+                type: 'line',
+                data: {
+                    labels: results.Date,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: results.TotalRevenue,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }, {
+                        label: 'Total Expenses',
+                        data: results.TotalExpenses,
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    }, {
+                        label: 'Gross Profit',
+                        data: results.GrossProfit,
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Overall Financial Metrics'
+                        }
+                    }
+                }
+            });
+
+            // Expense Breakdown Chart
+            const ctxExpense = document.getElementById('expenseBreakdown').getContext('2d');
+            charts.expenseBreakdown = new Chart(ctxExpense, {
+                type: 'line',
+                data: {
+                    labels: results.Date,
+                    datasets: [{
+                        label: 'Fixed Expenses',
+                        data: results.FixedExpenses,
+                        borderColor: 'rgb(153, 102, 255)',
+                        tension: 0.1
+                    }, {
+                        label: 'Flat Fee',
+                        data: results.FlatFee,
+                        borderColor: 'rgb(255, 159, 64)',
+                        tension: 0.1
+                    }, {
+                        label: 'Overage Costs',
+                        data: results.OverageCosts,
+                        borderColor: 'rgb(255, 205, 86)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Expense Breakdown'
+                        }
+                    }
+                }
+            });
+
+            // User Counts Chart
+            const ctxUsers = document.getElementById('userCounts').getContext('2d');
+            charts.userCounts = new Chart(ctxUsers, {
+                type: 'line',
+                data: {
+                    labels: results.Date,
+                    datasets: [{
+                        label: 'Acquaintance Users',
+                        data: results.AcquaintanceUsers,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }, {
+                        label: 'Friend Users',
+                        data: results.FriendUsers,
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    }, {
+                        label: 'Best Friend Users',
+                        data: results.BestFriendUsers,
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'User Count by Tier'
+                        }
+                    }
+                }
+            });
+
+            // Minutes Usage Chart
+            const ctxMinutes = document.getElementById('minutesUsage').getContext('2d');
+            charts.minutesUsage = new Chart(ctxMinutes, {
+                type: 'line',
+                data: {
+                    labels: results.Date,
+                    datasets: [{
+                        label: 'Total Minutes Used',
+                        data: results.TotalMinutesUsed,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }, {
+                        label: 'Included Minutes Threshold',
+                        data: new Array(results.Date.length).fill(variableCosts.includedMinutes),
+                        borderColor: 'rgb(255, 99, 132)',
+                        borderDash: [5, 5],
+                        tension: 0.1
+                    }, {
+                        label: 'Overage Minutes',
+                        data: results.OverageMinutes,
+                        borderColor: 'rgb(255, 159, 64)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Minutes Usage and Overages'
+                        }
+                    }
+                }
+            });
+        }
+
+        window.updateProjections = function() {
+            // Create subscription tiers from form inputs
+            const basicTier = createSubscriptionTier('Acquaintance');
+            const premiumTier = createSubscriptionTier('Friend');
+            const ultraTier = createSubscriptionTier('BestFriend');
+
+            // Create variable costs structure
+            const variableCosts = new VariableCostStructure(
+                Number(getInputValue('flat-fee')),
+                Number(getInputValue('included-minutes')),
+                Number(getInputValue('overage-cost'))
+            );
+
+            // Create monthly fixed expenses
+            const monthlyFixedExpenses = {
+                "Advertising": Number(getInputValue('advertising-cost'))
+            };
+
+            // Create projection model
+            const projection = new FinancialProjection(
+                [basicTier, premiumTier, ultraTier],
+                monthlyFixedExpenses,
+                variableCosts,
+                getInputValue('start-date'),
+                Number(getInputValue('num-months'))
+            );
+
+            // Calculate and update charts
+            const results = projection.calculateProjections();
+            createCharts(results, variableCosts);
+        };
+
+        // Initial chart creation
+        updateProjections();
+    </script>
+</body>
+</html> 
