@@ -24,6 +24,7 @@
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
         }
         .charts-wrapper {
             display: flex;
@@ -47,6 +48,7 @@
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            position: relative;
         }
         .form-group {
             display: flex;
@@ -57,6 +59,7 @@
         .input-group {
             flex: 1;
             min-width: 200px;
+            position: relative;
         }
         label {
             display: block;
@@ -176,6 +179,92 @@
             color: #666;
             font-size: 0.9em;
         }
+
+        /* Tooltip Styles */
+        .tooltip-trigger {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-color: #2196F3;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 18px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: help;
+            margin-left: 8px;
+            position: relative;
+            vertical-align: middle;
+        }
+
+        .tooltip-trigger:hover {
+            background-color: #1976D2;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            width: 300px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 13px;
+            line-height: 1.4;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip-trigger:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .label-with-tooltip {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Responsive tooltip positioning */
+        @media (max-width: 768px) {
+            .tooltip {
+                width: 250px;
+                margin-left: -125px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -187,32 +276,81 @@
             
             <!-- Subscription Tiers -->
             <div class="form-section">
-                <h3>Subscription Tiers</h3>
+                <div class="section-title">
+                    <h3>Subscription Tiers</h3>
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            Define your different subscription plans. Each tier has its own pricing, user limits, and customer behavior patterns. The system tracks how users grow, churn, and use your service across all tiers.
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Acquaintance Tier -->
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Acquaintance - Minute Quota</label>
+                        <div class="label-with-tooltip">
+                            <label>Acquaintance - Minute Quota</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The maximum number of minutes included in this subscription tier each month. Users who exceed this will generate overage charges.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="acquaintance-quota" value="5">
                     </div>
                     <div class="input-group">
-                        <label>Price per Month ($)</label>
+                        <div class="label-with-tooltip">
+                            <label>Price per Month ($)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The monthly subscription fee charged to each user in this tier. This is your primary recurring revenue source.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="acquaintance-price" value="10">
                     </div>
                     <div class="input-group">
-                        <label>Initial Users</label>
+                        <div class="label-with-tooltip">
+                            <label>Initial Users</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The number of paying subscribers you start with in this tier at the beginning of your projection period.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="acquaintance-users" value="100">
                     </div>
                     <div class="input-group">
-                        <label>Monthly Churn Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Monthly Churn Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of users who cancel their subscription each month. Lower churn rates indicate better customer retention and more predictable revenue.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="acquaintance-churn" value="5" step="0.1">
                     </div>
                     <div class="input-group">
-                        <label>Monthly Growth Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Monthly Growth Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of new users you acquire each month relative to your current user base. This represents your organic and paid acquisition efforts.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="acquaintance-growth" value="10" step="0.1">
                     </div>
                     <div class="input-group">
-                        <label>Usage Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Usage Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of their allocated minutes that users actually consume on average. Not all users will use their full quota every month.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="acquaintance-usage" value="75" step="1">
                     </div>
                 </div>
@@ -220,27 +358,69 @@
                 <!-- Friend Tier -->
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Friend - Minute Quota</label>
+                        <div class="label-with-tooltip">
+                            <label>Friend - Minute Quota</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The maximum number of minutes included in this subscription tier each month. Users who exceed this will generate overage charges.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="friend-quota" value="15">
                     </div>
                     <div class="input-group">
-                        <label>Price per Month ($)</label>
+                        <div class="label-with-tooltip">
+                            <label>Price per Month ($)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The monthly subscription fee charged to each user in this tier. This is your primary recurring revenue source.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="friend-price" value="40">
                     </div>
                     <div class="input-group">
-                        <label>Initial Users</label>
+                        <div class="label-with-tooltip">
+                            <label>Initial Users</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The number of paying subscribers you start with in this tier at the beginning of your projection period.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="friend-users" value="75">
                     </div>
                     <div class="input-group">
-                        <label>Monthly Churn Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Monthly Churn Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of users who cancel their subscription each month. Lower churn rates indicate better customer retention and more predictable revenue.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="friend-churn" value="3.5" step="0.1">
                     </div>
                     <div class="input-group">
-                        <label>Monthly Growth Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Monthly Growth Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of new users you acquire each month relative to your current user base. This represents your organic and paid acquisition efforts.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="friend-growth" value="6.5" step="0.1">
                     </div>
                     <div class="input-group">
-                        <label>Usage Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Usage Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of their allocated minutes that users actually consume on average. Not all users will use their full quota every month.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="friend-usage" value="85" step="1">
                     </div>
                 </div>
@@ -248,27 +428,69 @@
                 <!-- Best Friend Tier -->
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Best Friend - Minute Quota</label>
+                        <div class="label-with-tooltip">
+                            <label>Best Friend - Minute Quota</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The maximum number of minutes included in this subscription tier each month. Users who exceed this will generate overage charges.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="bestfriend-quota" value="30">
                     </div>
                     <div class="input-group">
-                        <label>Price per Month ($)</label>
+                        <div class="label-with-tooltip">
+                            <label>Price per Month ($)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The monthly subscription fee charged to each user in this tier. This is your primary recurring revenue source.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="bestfriend-price" value="70">
                     </div>
                     <div class="input-group">
-                        <label>Initial Users</label>
+                        <div class="label-with-tooltip">
+                            <label>Initial Users</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The number of paying subscribers you start with in this tier at the beginning of your projection period.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="bestfriend-users" value="50">
                     </div>
                     <div class="input-group">
-                        <label>Monthly Churn Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Monthly Churn Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of users who cancel their subscription each month. Lower churn rates indicate better customer retention and more predictable revenue.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="bestfriend-churn" value="3" step="0.1">
                     </div>
                     <div class="input-group">
-                        <label>Monthly Growth Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Monthly Growth Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of new users you acquire each month relative to your current user base. This represents your organic and paid acquisition efforts.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="bestfriend-growth" value="5" step="0.1">
                     </div>
                     <div class="input-group">
-                        <label>Usage Rate (%)</label>
+                        <div class="label-with-tooltip">
+                            <label>Usage Rate (%)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The percentage of their allocated minutes that users actually consume on average. Not all users will use their full quota every month.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="bestfriend-usage" value="90" step="1">
                     </div>
                 </div>
@@ -276,10 +498,24 @@
 
             <!-- Customer Acquisition Cost -->
             <div class="form-section">
-                <h3>Customer Acquisition Cost (CAC)</h3>
+                <div class="section-title">
+                    <h3>Customer Acquisition Cost (CAC)</h3>
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            CAC represents how much you spend on marketing, sales, and other activities to acquire each new paying customer. This includes advertising costs, sales team salaries, marketing tools, and promotional expenses.
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Average CAC per New User ($)</label>
+                        <div class="label-with-tooltip">
+                            <label>Average CAC per New User ($)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The average cost to acquire one new paying customer across all channels and tiers. This cost is applied each time you gain a new subscriber.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="cac-per-user" value="25" step="0.01">
                     </div>
                 </div>
@@ -290,18 +526,46 @@
 
             <!-- Variable Costs Structure -->
             <div class="form-section">
-                <h3>Variable Cost Structure</h3>
+                <div class="section-title">
+                    <h3>Variable Cost Structure</h3>
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            These are costs that change based on your service usage. Many SaaS businesses have third-party service costs that scale with usage, like API calls, cloud computing, or communication services.
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Monthly Flat Fee ($)</label>
+                        <div class="label-with-tooltip">
+                            <label>Monthly Flat Fee ($)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    A fixed monthly cost you pay to your service provider regardless of usage. This might be a base plan fee for APIs, cloud services, or communication platforms.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="flat-fee" value="1100">
                     </div>
                     <div class="input-group">
-                        <label>Included Minutes</label>
+                        <div class="label-with-tooltip">
+                            <label>Included Minutes</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The number of minutes included in your flat fee. Once your total usage exceeds this amount, you'll pay overage charges.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="included-minutes" value="1100">
                     </div>
                     <div class="input-group">
-                        <label>Overage Cost per Minute ($)</label>
+                        <div class="label-with-tooltip">
+                            <label>Overage Cost per Minute ($)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The additional cost charged for each minute of usage beyond your included minutes. This creates variable costs that scale with your business growth.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="overage-cost" value="0.11" step="0.01">
                     </div>
                 </div>
@@ -309,7 +573,14 @@
 
             <!-- Monthly Fixed Expenses -->
             <div class="form-section">
-                <h3>Monthly Fixed Expenses</h3>
+                <div class="section-title">
+                    <h3>Monthly Fixed Expenses</h3>
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            These are recurring costs that remain relatively constant each month regardless of your user count or usage. Examples include salaries, rent, insurance, software subscriptions, and marketing budgets.
+                        </div>
+                    </div>
+                </div>
                 <div id="expenses-container">
                     <div class="expense-item">
                         <div class="input-group">
@@ -350,10 +621,24 @@
 
             <!-- One-Time Startup Costs -->
             <div class="form-section">
-                <h3>One-Time Startup Costs</h3>
+                <div class="section-title">
+                    <h3>One-Time Startup Costs</h3>
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            Initial expenses required to start your business that won't recur monthly. These are deducted from your available funding at the beginning of the projection period.
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Initial Legal & Setup Costs ($)</label>
+                        <div class="label-with-tooltip">
+                            <label>Initial Legal & Setup Costs ($)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    One-time costs like legal fees, business registration, initial equipment purchases, website development, or other setup expenses needed to launch your business.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="startup-costs" value="10000">
                     </div>
                 </div>
@@ -364,18 +649,46 @@
 
             <!-- Available Funding & Projection Period -->
             <div class="form-section">
-                <h3>Available Funding & Projection Period</h3>
+                <div class="section-title">
+                    <h3>Available Funding & Projection Period</h3>
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            Set your total available capital and the timeframe for your financial projections. The system will track when you might run out of funding and when you might reach profitability.
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="input-group">
-                        <label>Available Funding ($)</label>
+                        <div class="label-with-tooltip">
+                            <label>Available Funding ($)</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    Total capital available to cover losses and fund operations. This could be from personal savings, investors, loans, or other funding sources.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="available-funding" value="50000">
                     </div>
                     <div class="input-group">
-                        <label>Start Date</label>
+                        <div class="label-with-tooltip">
+                            <label>Start Date</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    The beginning date for your financial projections. This helps with planning and tracking your business timeline.
+                                </div>
+                            </div>
+                        </div>
                         <input type="date" id="start-date" value="2025-09-01">
                     </div>
                     <div class="input-group">
-                        <label>Number of Months</label>
+                        <div class="label-with-tooltip">
+                            <label>Number of Months</label>
+                            <div class="tooltip-trigger">?
+                                <div class="tooltip">
+                                    How many months into the future to project. Longer periods help with strategic planning but become less accurate over time.
+                                </div>
+                            </div>
+                        </div>
                         <input type="number" id="num-months" value="24" min="1" max="60">
                     </div>
                 </div>
@@ -386,39 +699,117 @@
 
         <!-- Burn Rate Summary -->
         <div class="burn-rate-summary" id="burn-rate-summary" style="display: none;">
-            <h3>🔥 Burn Rate Analysis</h3>
+            <div class="section-title">
+                <h3>🔥 Burn Rate Analysis</h3>
+                <div class="tooltip-trigger">?
+                    <div class="tooltip">
+                        Burn rate shows how much money you're losing each month. A positive burn rate means you're spending more than you earn. The goal is to reduce burn rate to zero (break-even) and eventually become profitable.
+                    </div>
+                </div>
+            </div>
             <div id="burn-rate-metrics"></div>
         </div>
 
         <!-- Funding Summary -->
         <div class="funding-summary" id="funding-summary" style="display: none;">
-            <h3>💰 Funding Analysis</h3>
+            <div class="section-title">
+                <h3>💰 Funding Analysis</h3>
+                <div class="tooltip-trigger">?
+                    <div class="tooltip">
+                        This tracks how your available funding is used over time to cover losses. It shows when you might run out of money and helps you plan for additional funding rounds or profitability milestones.
+                    </div>
+                </div>
+            </div>
             <div id="funding-metrics"></div>
         </div>
 
         <div class="charts-wrapper">
             <div class="chart-container">
+                <div class="chart-title">
+                    Overall Financial Metrics
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            This chart shows your core financial performance over time. Revenue is money coming in from subscriptions, Total Expenses includes all costs, and Monthly Cash Flow shows your net profit/loss each month.
+                        </div>
+                    </div>
+                </div>
                 <canvas id="financialMetrics"></canvas>
             </div>
             <div class="chart-container">
+                <div class="chart-title">
+                    Expense Breakdown
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            Shows how your different expense categories change over time. Fixed Expenses stay constant, Flat Fee is your base service cost, Overage Costs increase with usage, and CAC Costs depend on new user acquisition.
+                        </div>
+                    </div>
+                </div>
                 <canvas id="expenseBreakdown"></canvas>
             </div>
             <div class="chart-container">
+                <div class="chart-title">
+                    Monthly Burn Rate Analysis
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            Burn rate is how much money you lose each month (expenses minus revenue). Values above the break-even line mean you're losing money. The goal is to get below the line and stay there.
+                        </div>
+                    </div>
+                </div>
                 <canvas id="burnRateChart"></canvas>
             </div>
             <div class="chart-container">
+                <div class="chart-title">
+                    Cash Flow Analysis with Funding Support
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            Shows your cash flow before and after using funding to cover losses. The red area shows losses, while the green line shows your actual cash position after drawing from available funding.
+                        </div>
+                    </div>
+                </div>
                 <canvas id="cashFlowChart"></canvas>
             </div>
             <div class="chart-container">
+                <div class="chart-title">
+                    Funding Drawdown & Remaining Balance
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            The bars show how much funding you use each month to cover losses. The line shows how much funding remains. When the line reaches zero, you've exhausted your available capital.
+                        </div>
+                    </div>
+                </div>
                 <canvas id="fundingChart"></canvas>
             </div>
             <div class="chart-container">
+                <div class="chart-title">
+                    User Count by Tier
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            Tracks how your subscriber base grows in each pricing tier over time. This helps you understand which tiers are most popular and how your customer base is evolving.
+                        </div>
+                    </div>
+                </div>
                 <canvas id="userCounts"></canvas>
             </div>
             <div class="chart-container">
+                <div class="chart-title">
+                    Minutes Usage and Overages
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            Shows total minutes used by all customers vs. your included minutes threshold. When usage exceeds the threshold, you pay overage charges. This helps predict variable costs.
+                        </div>
+                    </div>
+                </div>
                 <canvas id="minutesUsage"></canvas>
             </div>
             <div class="chart-container">
+                <div class="chart-title">
+                    Customer Acquisition Cost Analysis
+                    <div class="tooltip-trigger">?
+                        <div class="tooltip">
+                            The bars show new users acquired each month, while the line shows the total cost of acquiring those users. This helps you understand the relationship between growth and acquisition spending.
+                        </div>
+                    </div>
+                </div>
                 <canvas id="cacChart"></canvas>
             </div>
         </div>
@@ -642,8 +1033,7 @@
                     responsive: true,
                     plugins: {
                         title: {
-                            display: true,
-                            text: 'Overall Financial Metrics'
+                            display: false
                         }
                     }
                 }
@@ -681,8 +1071,7 @@
                     responsive: true,
                     plugins: {
                         title: {
-                            display: true,
-                            text: 'Expense Breakdown'
+                            display: false
                         }
                     }
                 }
@@ -713,8 +1102,7 @@
                     responsive: true,
                     plugins: {
                         title: {
-                            display: true,
-                            text: 'Monthly Burn Rate Analysis'
+                            display: false
                         }
                     },
                     scales: {
@@ -758,8 +1146,7 @@
                     responsive: true,
                     plugins: {
                         title: {
-                            display: true,
-                            text: 'Cash Flow Analysis with Funding Support'
+                            display: false
                         }
                     }
                 }
@@ -791,8 +1178,7 @@
                     responsive: true,
                     plugins: {
                         title: {
-                            display: true,
-                            text: 'Funding Drawdown & Remaining Balance'
+                            display: false
                         }
                     },
                     scales: {
@@ -850,8 +1236,7 @@
                     responsive: true,
                     plugins: {
                         title: {
-                            display: true,
-                            text: 'User Count by Tier'
+                            display: false
                         }
                     }
                 }
@@ -885,8 +1270,7 @@
                     responsive: true,
                     plugins: {
                         title: {
-                            display: true,
-                            text: 'Minutes Usage and Overages'
+                            display: false
                         }
                     }
                 }
@@ -918,8 +1302,7 @@
                     responsive: true,
                     plugins: {
                         title: {
-                            display: true,
-                            text: 'Customer Acquisition Cost Analysis'
+                            display: false
                         }
                     },
                     scales: {
