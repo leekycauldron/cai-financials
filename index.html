@@ -3,212 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Projections</title>
+    <title>Financial Projections Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
-        }
-        .chart-container {
-            width: 45%;
-            margin: 20px;
-            display: inline-block;
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-        .charts-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        h1, h2 {
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
             text-align: center;
-            color: #333;
-            margin: 20px 0;
         }
-        .forms-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .form-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            position: relative;
-        }
-        .form-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
             margin-bottom: 10px;
         }
-        .input-group {
-            flex: 1;
-            min-width: 200px;
-            position: relative;
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
+
+        .content {
+            padding: 30px;
         }
-        input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
         }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .expense-item {
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-        }
-        .expense-item input {
-            margin: 0;
-        }
-        .remove-btn {
-            background-color: #ff4444;
-            padding: 5px 10px;
-            font-size: 12px;
-        }
-        .remove-btn:hover {
-            background-color: #cc0000;
-        }
-        .add-expense-btn {
-            background-color: #2196F3;
-        }
-        .add-expense-btn:hover {
-            background-color: #1976D2;
-        }
-        .funding-summary {
-            background: #e8f5e8;
-            border: 1px solid #4CAF50;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .funding-summary h3 {
-            color: #2e7d32;
-            margin-top: 0;
-        }
-        .funding-metric {
-            display: inline-block;
-            margin: 10px 20px 10px 0;
-            padding: 10px 15px;
-            background: white;
-            border-radius: 4px;
-            border-left: 4px solid #4CAF50;
-        }
-        .funding-metric strong {
-            display: block;
-            font-size: 1.2em;
-            color: #333;
-        }
-        .funding-metric span {
-            color: #666;
-            font-size: 0.9em;
-        }
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-left-color: #ff9800;
-        }
-        .warning h3 {
-            color: #856404;
-        }
-        .warning .funding-metric {
-            border-left-color: #ff9800;
-        }
-        .burn-rate-summary {
-            background: #f3e5f5;
-            border: 1px solid #9c27b0;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .burn-rate-summary h3 {
-            color: #6a1b9a;
-            margin-top: 0;
-        }
-        .burn-rate-metric {
-            display: inline-block;
-            margin: 10px 20px 10px 0;
-            padding: 10px 15px;
-            background: white;
-            border-radius: 4px;
-            border-left: 4px solid #9c27b0;
-        }
-        .burn-rate-metric strong {
-            display: block;
-            font-size: 1.2em;
-            color: #333;
-        }
-        .burn-rate-metric span {
-            color: #666;
-            font-size: 0.9em;
         }
 
-        /* Tooltip Styles */
-        .tooltip-trigger {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            background-color: #2196F3;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tier-section {
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tier-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .remove-tier {
+            background: #dc3545;
             color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 18px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: help;
-            margin-left: 8px;
-            position: relative;
-            vertical-align: middle;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
         }
 
-        .tooltip-trigger:hover {
-            background-color: #1976D2;
+        .remove-tier:hover {
+            background: #c82333;
+        }
+
+        .add-tier {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .add-tier:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .results {
+            margin-top: 40px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .summary-card.positive .value {
+            color: #28a745;
+        }
+
+        .summary-card.negative .value {
+            color: #dc3545;
+        }
+
+        .summary-card.warning .value {
+            color: #ffc107;
         }
 
         .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: help;
+            margin-left: 5px;
+        }
+
+        .tooltip-text {
             visibility: hidden;
             width: 300px;
             background-color: #333;
             color: #fff;
             text-align: left;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 12px;
             position: absolute;
             z-index: 1000;
@@ -217,12 +286,12 @@
             margin-left: -150px;
             opacity: 0;
             transition: opacity 0.3s;
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.4;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
-        .tooltip::after {
+        .tooltip-text::after {
             content: "";
             position: absolute;
             top: 100%;
@@ -233,584 +302,296 @@
             border-color: #333 transparent transparent transparent;
         }
 
-        .tooltip-trigger:hover .tooltip {
+        .tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
         }
 
-        .section-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .chart-title {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .label-with-tooltip {
-            display: flex;
-            align-items: center;
-        }
-
-        /* Responsive tooltip positioning */
         @media (max-width: 768px) {
-            .tooltip {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tooltip-text {
                 width: 250px;
                 margin-left: -125px;
+                left: 50%;
+                right: auto;
             }
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Financial Projections Dashboard</h1>
-        
-        <div class="forms-container">
-            <h2>Projection Parameters</h2>
-            
-            <!-- Subscription Tiers -->
-            <div class="form-section">
-                <div class="section-title">
-                    <h3>Subscription Tiers</h3>
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            Define your different subscription plans. Each tier has its own pricing, user limits, and customer behavior patterns. The system tracks how users grow, churn, and use your service across all tiers.
-                        </div>
+        <div class="header">
+            <h1>Financial Projections Dashboard</h1>
+            <p>Model your subscription business with advanced financial analytics</p>
+        </div>
+
+        <div class="content">
+            <!-- Subscription Tiers Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    Subscription Tiers
+                    <div class="tooltip">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">Define your subscription plans with pricing, quotas, and user behavior patterns. Each tier represents a different service level with its own pricing and usage limits.</span>
                     </div>
-                </div>
+                </h2>
+                <div id="subscription-tiers"></div>
+                <button class="add-tier" onclick="addTier()">+ Add Subscription Tier</button>
+            </div>
+
+            <!-- Cost Structure Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    Cost Structure
+                    <div class="tooltip">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">Define your business costs including fixed monthly expenses, variable usage costs, customer acquisition costs, and one-time startup expenses.</span>
+                    </div>
+                </h2>
                 
-                <!-- Acquaintance Tier -->
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Acquaintance - Minute Quota</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The maximum number of minutes included in this subscription tier each month. Users who exceed this will generate overage charges.
-                                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>
+                            Monthly Fixed Expenses ($)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Regular monthly costs that don't change with usage, such as salaries, rent, software subscriptions, and other operational expenses.</span>
                             </div>
-                        </div>
-                        <input type="number" id="acquaintance-quota" value="5">
+                        </label>
+                        <input type="number" id="fixed-expenses" value="10000" min="0">
                     </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Price per Month ($)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The monthly subscription fee charged to each user in this tier. This is your primary recurring revenue source.
-                                </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            Variable Cost - Flat Fee ($)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Base monthly fee for your service provider (e.g., API costs, hosting) that includes a certain amount of usage before overage charges apply.</span>
                             </div>
-                        </div>
-                        <input type="number" id="acquaintance-price" value="10">
+                        </label>
+                        <input type="number" id="flat-fee" value="1000" min="0">
                     </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Initial Users</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The number of paying subscribers you start with in this tier at the beginning of your projection period.
-                                </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            Included Minutes (Monthly)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Number of minutes included in your flat fee before overage charges begin. This is your total monthly allowance across all users.</span>
                             </div>
-                        </div>
-                        <input type="number" id="acquaintance-users" value="100">
+                        </label>
+                        <input type="number" id="included-minutes" value="100000" min="0">
                     </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Monthly Churn Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of users who cancel their subscription each month. Lower churn rates indicate better customer retention and more predictable revenue.
-                                </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            Overage Cost per Minute ($)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Additional cost charged for each minute of usage beyond your included allowance. This creates variable costs that scale with usage.</span>
                             </div>
-                        </div>
-                        <input type="number" id="acquaintance-churn" value="5" step="0.1">
+                        </label>
+                        <input type="number" id="overage-cost" value="0.02" step="0.001" min="0">
                     </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Monthly Growth Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of new users you acquire each month relative to your current user base. This represents your organic and paid acquisition efforts.
-                                </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            Customer Acquisition Cost (CAC) per User ($)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Average cost to acquire one new customer, including marketing spend, sales costs, advertising, and promotional expenses.</span>
                             </div>
-                        </div>
-                        <input type="number" id="acquaintance-growth" value="10" step="0.1">
+                        </label>
+                        <input type="number" id="cac-per-user" value="50" min="0">
                     </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Usage Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of their allocated minutes that users actually consume on average. Not all users will use their full quota every month.
-                                </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            One-time Startup Costs ($)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Initial expenses required to launch your business, such as development costs, legal fees, initial marketing, equipment, and setup expenses.</span>
                             </div>
-                        </div>
-                        <input type="number" id="acquaintance-usage" value="75" step="1">
-                    </div>
-                </div>
-
-                <!-- Friend Tier -->
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Friend - Minute Quota</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The maximum number of minutes included in this subscription tier each month. Users who exceed this will generate overage charges.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="friend-quota" value="15">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Price per Month ($)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The monthly subscription fee charged to each user in this tier. This is your primary recurring revenue source.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="friend-price" value="40">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Initial Users</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The number of paying subscribers you start with in this tier at the beginning of your projection period.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="friend-users" value="75">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Monthly Churn Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of users who cancel their subscription each month. Lower churn rates indicate better customer retention and more predictable revenue.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="friend-churn" value="3.5" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Monthly Growth Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of new users you acquire each month relative to your current user base. This represents your organic and paid acquisition efforts.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="friend-growth" value="6.5" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Usage Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of their allocated minutes that users actually consume on average. Not all users will use their full quota every month.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="friend-usage" value="85" step="1">
-                    </div>
-                </div>
-
-                <!-- Best Friend Tier -->
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Best Friend - Minute Quota</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The maximum number of minutes included in this subscription tier each month. Users who exceed this will generate overage charges.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="bestfriend-quota" value="30">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Price per Month ($)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The monthly subscription fee charged to each user in this tier. This is your primary recurring revenue source.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="bestfriend-price" value="70">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Initial Users</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The number of paying subscribers you start with in this tier at the beginning of your projection period.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="bestfriend-users" value="50">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Monthly Churn Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of users who cancel their subscription each month. Lower churn rates indicate better customer retention and more predictable revenue.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="bestfriend-churn" value="3" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Monthly Growth Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of new users you acquire each month relative to your current user base. This represents your organic and paid acquisition efforts.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="bestfriend-growth" value="5" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Usage Rate (%)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The percentage of their allocated minutes that users actually consume on average. Not all users will use their full quota every month.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="bestfriend-usage" value="90" step="1">
+                        </label>
+                        <input type="number" id="startup-costs" value="25000" min="0">
                     </div>
                 </div>
             </div>
 
-            <!-- Customer Acquisition Cost -->
-            <div class="form-section">
-                <div class="section-title">
-                    <h3>Customer Acquisition Cost (CAC)</h3>
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            CAC represents how much you spend on marketing, sales, and other activities to acquire each new paying customer. This includes advertising costs, sales team salaries, marketing tools, and promotional expenses.
-                        </div>
+            <!-- Funding & Projections Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    Funding & Projections
+                    <div class="tooltip">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">Set your available funding and projection timeline to understand cash flow, burn rate, and runway analysis.</span>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Average CAC per New User ($)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The average cost to acquire one new paying customer across all channels and tiers. This cost is applied each time you gain a new subscriber.
-                                </div>
+                </h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>
+                            Available Funding ($)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">Total capital available to fund operations, including investment, loans, or personal funds. This determines how long you can operate before needing additional funding.</span>
                             </div>
-                        </div>
-                        <input type="number" id="cac-per-user" value="25" step="0.01">
+                        </label>
+                        <input type="number" id="available-funding" value="500000" min="0">
                     </div>
-                </div>
-                <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
-                    This cost will be applied for each new user acquired across all subscription tiers.
-                </p>
-            </div>
-
-            <!-- Variable Costs Structure -->
-            <div class="form-section">
-                <div class="section-title">
-                    <h3>Variable Cost Structure</h3>
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            These are costs that change based on your service usage. Many SaaS businesses have third-party service costs that scale with usage, like API calls, cloud computing, or communication services.
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Monthly Flat Fee ($)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    A fixed monthly cost you pay to your service provider regardless of usage. This might be a base plan fee for APIs, cloud services, or communication platforms.
-                                </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            Start Date
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">The beginning date for your financial projections. All calculations will start from this month.</span>
                             </div>
-                        </div>
-                        <input type="number" id="flat-fee" value="1100">
+                        </label>
+                        <input type="month" id="start-date" value="2024-01">
                     </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Included Minutes</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The number of minutes included in your flat fee. Once your total usage exceeds this amount, you'll pay overage charges.
-                                </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            Projection Period (Months)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">How many months into the future to project. Longer periods help with strategic planning but may be less accurate due to market uncertainties.</span>
                             </div>
-                        </div>
-                        <input type="number" id="included-minutes" value="1100">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Overage Cost per Minute ($)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The additional cost charged for each minute of usage beyond your included minutes. This creates variable costs that scale with your business growth.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="overage-cost" value="0.11" step="0.01">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Monthly Fixed Expenses -->
-            <div class="form-section">
-                <div class="section-title">
-                    <h3>Monthly Fixed Expenses</h3>
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            These are recurring costs that remain relatively constant each month regardless of your user count or usage. Examples include salaries, rent, insurance, software subscriptions, and marketing budgets.
-                        </div>
-                    </div>
-                </div>
-                <div id="expenses-container">
-                    <div class="expense-item">
-                        <div class="input-group">
-                            <label>Expense Name</label>
-                            <input type="text" value="Advertising" class="expense-name">
-                        </div>
-                        <div class="input-group">
-                            <label>Monthly Cost ($)</label>
-                            <input type="number" value="5000" class="expense-cost">
-                        </div>
-                        <button type="button" class="remove-btn" onclick="removeExpense(this)">Remove</button>
-                    </div>
-                    <div class="expense-item">
-                        <div class="input-group">
-                            <label>Expense Name</label>
-                            <input type="text" value="Salaries" class="expense-name">
-                        </div>
-                        <div class="input-group">
-                            <label>Monthly Cost ($)</label>
-                            <input type="number" value="15000" class="expense-cost">
-                        </div>
-                        <button type="button" class="remove-btn" onclick="removeExpense(this)">Remove</button>
-                    </div>
-                    <div class="expense-item">
-                        <div class="input-group">
-                            <label>Expense Name</label>
-                            <input type="text" value="Office Lease" class="expense-name">
-                        </div>
-                        <div class="input-group">
-                            <label>Monthly Cost ($)</label>
-                            <input type="number" value="3000" class="expense-cost">
-                        </div>
-                        <button type="button" class="remove-btn" onclick="removeExpense(this)">Remove</button>
-                    </div>
-                </div>
-                <button type="button" class="add-expense-btn" onclick="addExpense()">Add New Expense</button>
-            </div>
-
-            <!-- One-Time Startup Costs -->
-            <div class="form-section">
-                <div class="section-title">
-                    <h3>One-Time Startup Costs</h3>
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            Initial expenses required to start your business that won't recur monthly. These are deducted from your available funding at the beginning of the projection period.
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Initial Legal & Setup Costs ($)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    One-time costs like legal fees, business registration, initial equipment purchases, website development, or other setup expenses needed to launch your business.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="startup-costs" value="10000">
-                    </div>
-                </div>
-                <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
-                    These are one-time costs incurred at the beginning (legal fees, initial licenses, equipment, etc.)
-                </p>
-            </div>
-
-            <!-- Available Funding & Projection Period -->
-            <div class="form-section">
-                <div class="section-title">
-                    <h3>Available Funding & Projection Period</h3>
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            Set your total available capital and the timeframe for your financial projections. The system will track when you might run out of funding and when you might reach profitability.
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Available Funding ($)</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    Total capital available to cover losses and fund operations. This could be from personal savings, investors, loans, or other funding sources.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="number" id="available-funding" value="50000">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Start Date</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    The beginning date for your financial projections. This helps with planning and tracking your business timeline.
-                                </div>
-                            </div>
-                        </div>
-                        <input type="date" id="start-date" value="2025-09-01">
-                    </div>
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label>Number of Months</label>
-                            <div class="tooltip-trigger">?
-                                <div class="tooltip">
-                                    How many months into the future to project. Longer periods help with strategic planning but become less accurate over time.
-                                </div>
-                            </div>
-                        </div>
+                        </label>
                         <input type="number" id="num-months" value="24" min="1" max="60">
                     </div>
                 </div>
             </div>
 
-            <button onclick="updateProjections()">Update Projections</button>
-        </div>
+            <button class="calculate-btn" onclick="calculateProjections()">Calculate Financial Projections</button>
 
-        <!-- Burn Rate Summary -->
-        <div class="burn-rate-summary" id="burn-rate-summary" style="display: none;">
-            <div class="section-title">
-                <h3>🔥 Burn Rate Analysis</h3>
-                <div class="tooltip-trigger">?
-                    <div class="tooltip">
-                        Burn rate shows how much money you're losing each month. A positive burn rate means you're spending more than you earn. The goal is to reduce burn rate to zero (break-even) and eventually become profitable.
-                    </div>
+            <!-- Results Section -->
+            <div id="results" class="results hidden">
+                <div class="section">
+                    <h2 class="section-title">
+                        Key Metrics Summary
+                        <div class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">Critical business metrics that determine your financial health, growth trajectory, and funding requirements.</span>
+                        </div>
+                    </h2>
+                    <div class="summary-grid" id="summary-cards"></div>
                 </div>
-            </div>
-            <div id="burn-rate-metrics"></div>
-        </div>
 
-        <!-- Funding Summary -->
-        <div class="funding-summary" id="funding-summary" style="display: none;">
-            <div class="section-title">
-                <h3>💰 Funding Analysis</h3>
-                <div class="tooltip-trigger">?
-                    <div class="tooltip">
-                        This tracks how your available funding is used over time to cover losses. It shows when you might run out of money and helps you plan for additional funding rounds or profitability milestones.
-                    </div>
-                </div>
-            </div>
-            <div id="funding-metrics"></div>
-        </div>
-
-        <div class="charts-wrapper">
-            <div class="chart-container">
-                <div class="chart-title">
-                    Overall Financial Metrics
-                    <div class="tooltip-trigger">?
+                <div class="section">
+                    <h2 class="section-title">
+                        Financial Analysis Charts
                         <div class="tooltip">
-                            This chart shows your core financial performance over time. Revenue is money coming in from subscriptions, Total Expenses includes all costs, and Monthly Cash Flow shows your net profit/loss each month.
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">Visual representation of your financial projections showing revenue growth, cost structure, cash flow, and funding utilization over time.</span>
+                        </div>
+                    </h2>
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <h3 class="chart-title">
+                                Financial Overview
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Shows your revenue growth, total expenses, and net cash flow over time. The gap between revenue and expenses indicates profitability.</span>
+                                </div>
+                            </h3>
+                            <canvas id="financial-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3 class="chart-title">
+                                Expense Breakdown
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Breakdown of your costs into fixed expenses (consistent monthly costs) and variable expenses (costs that change with usage and growth).</span>
+                                </div>
+                            </h3>
+                            <canvas id="expenses-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3 class="chart-title">
+                                Burn Rate Analysis
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Monthly cash burn (negative cash flow) and cumulative burn over time. High burn rates indicate faster funding consumption.</span>
+                                </div>
+                            </h3>
+                            <canvas id="burn-rate-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3 class="chart-title">
+                                Cash Flow with Funding
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Your actual cash position after accounting for funding support. Shows when you'll need additional funding or achieve profitability.</span>
+                                </div>
+                            </h3>
+                            <canvas id="cash-flow-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3 class="chart-title">
+                                Funding Utilization
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Monthly funding drawdown and remaining funding balance. Helps track your runway and plan for future funding rounds.</span>
+                                </div>
+                            </h3>
+                            <canvas id="funding-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3 class="chart-title">
+                                User Growth by Tier
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Growth trajectory of users in each subscription tier, showing how your customer base evolves over time.</span>
+                                </div>
+                            </h3>
+                            <canvas id="users-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3 class="chart-title">
+                                Usage & Overage Analysis
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Total platform usage and overage minutes that exceed your included allowance, driving additional variable costs.</span>
+                                </div>
+                            </h3>
+                            <canvas id="usage-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3 class="chart-title">
+                                Customer Acquisition Costs
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Monthly spending on customer acquisition and cumulative CAC investment. Shows the cost of growth and marketing efficiency.</span>
+                                </div>
+                            </h3>
+                            <canvas id="cac-chart"></canvas>
                         </div>
                     </div>
                 </div>
-                <canvas id="financialMetrics"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-title">
-                    Expense Breakdown
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            Shows how your different expense categories change over time. Fixed Expenses stay constant, Flat Fee is your base service cost, Overage Costs increase with usage, and CAC Costs depend on new user acquisition.
-                        </div>
-                    </div>
-                </div>
-                <canvas id="expenseBreakdown"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-title">
-                    Monthly Burn Rate Analysis
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            Burn rate is how much money you lose each month (expenses minus revenue). Values above the break-even line mean you're losing money. The goal is to get below the line and stay there.
-                        </div>
-                    </div>
-                </div>
-                <canvas id="burnRateChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-title">
-                    Cash Flow Analysis with Funding Support
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            Shows your cash flow before and after using funding to cover losses. The red area shows losses, while the green line shows your actual cash position after drawing from available funding.
-                        </div>
-                    </div>
-                </div>
-                <canvas id="cashFlowChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-title">
-                    Funding Drawdown & Remaining Balance
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            The bars show how much funding you use each month to cover losses. The line shows how much funding remains. When the line reaches zero, you've exhausted your available capital.
-                        </div>
-                    </div>
-                </div>
-                <canvas id="fundingChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-title">
-                    User Count by Tier
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            Tracks how your subscriber base grows in each pricing tier over time. This helps you understand which tiers are most popular and how your customer base is evolving.
-                        </div>
-                    </div>
-                </div>
-                <canvas id="userCounts"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-title">
-                    Minutes Usage and Overages
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            Shows total minutes used by all customers vs. your included minutes threshold. When usage exceeds the threshold, you pay overage charges. This helps predict variable costs.
-                        </div>
-                    </div>
-                </div>
-                <canvas id="minutesUsage"></canvas>
-            </div>
-            <div class="chart-container">
-                <div class="chart-title">
-                    Customer Acquisition Cost Analysis
-                    <div class="tooltip-trigger">?
-                        <div class="tooltip">
-                            The bars show new users acquired each month, while the line shows the total cost of acquiring those users. This helps you understand the relationship between growth and acquisition spending.
-                        </div>
-                    </div>
-                </div>
-                <canvas id="cacChart"></canvas>
             </div>
         </div>
     </div>
@@ -818,378 +599,399 @@
     <script type="module">
         import { VariableCostStructure, SubscriptionTier, FinancialProjection } from './financial_projections.js';
 
-        let charts = {
-            financialMetrics: null,
-            expenseBreakdown: null,
-            burnRateChart: null,
-            cashFlowChart: null,
-            fundingChart: null,
-            userCounts: null,
-            minutesUsage: null,
-            cacChart: null
-        };
+        let tierCount = 0;
+        let charts = {};
 
-        function getInputValue(id) {
-            return document.getElementById(id).value;
-        }
+        // Initialize with default tiers
+        window.addEventListener('load', function() {
+            addTier('Basic', 60, 29, 100, 0.05, 0.15, 0.7);
+            addTier('Pro', 180, 99, 50, 0.03, 0.20, 0.8);
+            addTier('Enterprise', 600, 299, 20, 0.02, 0.10, 0.9);
+        });
 
-        function createSubscriptionTier(prefix) {
-            return new SubscriptionTier(
-                prefix,
-                Number(getInputValue(`${prefix.toLowerCase()}-quota`)),
-                Number(getInputValue(`${prefix.toLowerCase()}-price`)),
-                Number(getInputValue(`${prefix.toLowerCase()}-users`)),
-                Number(getInputValue(`${prefix.toLowerCase()}-churn`)) / 100,
-                Number(getInputValue(`${prefix.toLowerCase()}-growth`)) / 100,
-                Number(getInputValue(`${prefix.toLowerCase()}-usage`)) / 100
-            );
-        }
-
-        function getExpenses() {
-            const expenses = {};
-            const expenseItems = document.querySelectorAll('.expense-item');
+        window.addTier = function(name = '', dailyQuota = 60, price = 29, users = 50, churn = 0.05, growth = 0.15, usage = 0.8) {
+            tierCount++;
+            const tierId = `tier-${tierCount}`;
             
-            expenseItems.forEach(item => {
-                const name = item.querySelector('.expense-name').value.trim();
-                const cost = Number(item.querySelector('.expense-cost').value);
-                if (name && cost >= 0) {
-                    expenses[name] = cost;
-                }
-            });
-            
-            return expenses;
-        }
-
-        window.addExpense = function() {
-            const container = document.getElementById('expenses-container');
-            const expenseItem = document.createElement('div');
-            expenseItem.className = 'expense-item';
-            expenseItem.innerHTML = `
-                <div class="input-group">
-                    <label>Expense Name</label>
-                    <input type="text" placeholder="Enter expense name" class="expense-name">
-                </div>
-                <div class="input-group">
-                    <label>Monthly Cost ($)</label>
-                    <input type="number" value="0" class="expense-cost">
-                </div>
-                <button type="button" class="remove-btn" onclick="removeExpense(this)">Remove</button>
-            `;
-            container.appendChild(expenseItem);
-        };
-
-        window.removeExpense = function(button) {
-            const expenseItem = button.parentElement;
-            expenseItem.remove();
-        };
-
-        function updateBurnRateSummary(results) {
-            const summaryDiv = document.getElementById('burn-rate-summary');
-            const metricsDiv = document.getElementById('burn-rate-metrics');
-            
-            // Calculate burn rate metrics
-            const avgBurnRate = results.BurnRate.reduce((sum, val) => sum + val, 0) / results.BurnRate.length;
-            const maxBurnRate = Math.max(...results.BurnRate);
-            const minBurnRate = Math.min(...results.BurnRate);
-            const finalBurnRate = results.BurnRate[results.BurnRate.length - 1];
-            
-            // Find when burn rate becomes positive (if ever)
-            const positiveMonths = results.BurnRate.filter(rate => rate > 0).length;
-            const firstPositiveMonth = results.BurnRate.findIndex(rate => rate > 0) + 1;
-            
-            let metricsHTML = `
-                <div class="burn-rate-metric">
-                    <strong>$${avgBurnRate.toLocaleString()}</strong>
-                    <span>Average Monthly Burn Rate</span>
-                </div>
-                <div class="burn-rate-metric">
-                    <strong>$${maxBurnRate.toLocaleString()}</strong>
-                    <span>Peak Monthly Burn Rate</span>
-                </div>
-                <div class="burn-rate-metric">
-                    <strong>$${finalBurnRate.toLocaleString()}</strong>
-                    <span>Final Month Burn Rate</span>
-                </div>
-            `;
-            
-            if (firstPositiveMonth > 0) {
-                metricsHTML += `
-                    <div class="burn-rate-metric">
-                        <strong>Month ${firstPositiveMonth}</strong>
-                        <span>First Positive Cash Flow</span>
+            const tierHtml = `
+                <div class="tier-section" id="${tierId}">
+                    <div class="tier-header">
+                        <span class="tier-name">Subscription Tier ${tierCount}</span>
+                        <button class="remove-tier" onclick="removeTier('${tierId}')">Remove</button>
                     </div>
-                `;
-            }
-            
-            metricsHTML += `
-                <div class="burn-rate-metric">
-                    <strong>${positiveMonths} months</strong>
-                    <span>Months with Positive Cash Flow</span>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>
+                                Tier Name
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">A descriptive name for this subscription tier (e.g., Basic, Pro, Enterprise) used for identification in reports and charts.</span>
+                                </div>
+                            </label>
+                            <input type="text" class="tier-name-input" value="${name}" placeholder="e.g., Basic, Pro, Enterprise">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Daily Minute Quota
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Maximum minutes each user in this tier can use per day. Monthly usage is calculated as daily quota × 30 days × usage rate.</span>
+                                </div>
+                            </label>
+                            <input type="number" class="daily-quota" value="${dailyQuota}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Monthly Price ($)
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Monthly subscription fee charged to each user in this tier. This is your primary revenue source per user.</span>
+                                </div>
+                            </label>
+                            <input type="number" class="monthly-price" value="${price}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Initial User Count
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Number of users you expect to start with in this tier at the beginning of your projection period.</span>
+                                </div>
+                            </label>
+                            <input type="number" class="initial-users" value="${users}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Monthly Churn Rate (%)
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Percentage of users who cancel their subscription each month. Lower churn rates indicate better customer retention and product-market fit.</span>
+                                </div>
+                            </label>
+                            <input type="number" class="churn-rate" value="${churn * 100}" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Monthly Growth Rate (%)
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Percentage of new users acquired each month relative to current user base. Higher growth rates accelerate revenue but also increase CAC costs.</span>
+                                </div>
+                            </label>
+                            <input type="number" class="growth-rate" value="${growth * 100}" min="0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                Usage Rate (%)
+                                <div class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Percentage of their daily quota that users typically consume. Most users don't use 100% of their allowance, so this creates more realistic usage projections.</span>
+                                </div>
+                            </label>
+                            <input type="number" class="usage-rate" value="${usage * 100}" min="0" max="100" step="1">
+                        </div>
+                    </div>
                 </div>
             `;
             
-            metricsDiv.innerHTML = metricsHTML;
-            summaryDiv.style.display = 'block';
+            document.getElementById('subscription-tiers').insertAdjacentHTML('beforeend', tierHtml);
+        };
+
+        window.removeTier = function(tierId) {
+            const tierElement = document.getElementById(tierId);
+            if (tierElement) {
+                tierElement.remove();
+            }
+        };
+
+        window.calculateProjections = function() {
+            // Collect subscription tiers
+            const tiers = [];
+            const tierElements = document.querySelectorAll('.tier-section');
+            
+            tierElements.forEach(tierElement => {
+                const name = tierElement.querySelector('.tier-name-input').value || 'Unnamed';
+                const dailyQuota = parseInt(tierElement.querySelector('.daily-quota').value) || 0;
+                const price = parseFloat(tierElement.querySelector('.monthly-price').value) || 0;
+                const initialUsers = parseInt(tierElement.querySelector('.initial-users').value) || 0;
+                const churnRate = parseFloat(tierElement.querySelector('.churn-rate').value) / 100 || 0;
+                const growthRate = parseFloat(tierElement.querySelector('.growth-rate').value) / 100 || 0;
+                const usageRate = parseFloat(tierElement.querySelector('.usage-rate').value) / 100 || 0;
+                
+                tiers.push(new SubscriptionTier(name, dailyQuota, price, initialUsers, churnRate, growthRate, usageRate));
+            });
+
+            // Collect cost structure
+            const fixedExpenses = parseFloat(document.getElementById('fixed-expenses').value) || 0;
+            const flatFee = parseFloat(document.getElementById('flat-fee').value) || 0;
+            const includedMinutes = parseInt(document.getElementById('included-minutes').value) || 0;
+            const overageCost = parseFloat(document.getElementById('overage-cost').value) || 0;
+            const cacPerUser = parseFloat(document.getElementById('cac-per-user').value) || 0;
+            const startupCosts = parseFloat(document.getElementById('startup-costs').value) || 0;
+
+            // Collect funding and projection settings
+            const availableFunding = parseFloat(document.getElementById('available-funding').value) || 0;
+            const startDate = document.getElementById('start-date').value;
+            const numMonths = parseInt(document.getElementById('num-months').value) || 12;
+
+            // Create projection
+            const variableCostStructure = new VariableCostStructure(flatFee, includedMinutes, overageCost);
+            const monthlyFixedExpenses = { total: fixedExpenses };
+            
+            const projection = new FinancialProjection(
+                tiers,
+                monthlyFixedExpenses,
+                variableCostStructure,
+                startDate,
+                numMonths,
+                availableFunding,
+                cacPerUser,
+                startupCosts
+            );
+
+            const results = projection.calculateProjections();
+            displayResults(results, tiers);
+        };
+
+        function displayResults(results, tiers) {
+            document.getElementById('results').classList.remove('hidden');
+            
+            // Create summary cards
+            createSummaryCards(results);
+            
+            // Create charts
+            createCharts(results, tiers);
         }
 
-        function updateFundingSummary(results) {
-            const summaryDiv = document.getElementById('funding-summary');
-            const metricsDiv = document.getElementById('funding-metrics');
+        function createSummaryCards(results) {
+            const summaryContainer = document.getElementById('summary-cards');
             
             // Calculate key metrics
+            const totalRevenue = results.TotalRevenue[results.TotalRevenue.length - 1];
+            const totalExpenses = results.TotalExpenses[results.TotalExpenses.length - 1];
+            const finalCashFlow = results.MonthlyCashFlow[results.MonthlyCashFlow.length - 1];
+            const maxBurnRate = Math.max(...results.BurnRate);
             const totalFundingUsed = results.FundingDrawdown.reduce((sum, val) => sum + val, 0);
-            const finalRemainingFunding = results.RemainingFunding[results.RemainingFunding.length - 1];
-            const breakEvenMonth = results.BreakEvenMonth;
-            const fundingExhausted = results.FundingExhausted;
-            const fundingExhaustedMonth = results.FundingExhaustedMonth;
-            
-            // Find peak monthly drawdown
-            const maxMonthlyDrawdown = Math.max(...results.FundingDrawdown);
-            const maxDrawdownMonth = results.FundingDrawdown.indexOf(maxMonthlyDrawdown) + 1;
-            
-            // Determine if this is a warning scenario
-            const isWarning = fundingExhausted || (!breakEvenMonth && finalRemainingFunding < 10000);
-            
-            if (isWarning) {
-                summaryDiv.className = 'funding-summary warning';
-            } else {
-                summaryDiv.className = 'funding-summary';
+            const remainingFunding = results.RemainingFunding[results.RemainingFunding.length - 1];
+
+            const cards = [
+                {
+                    title: 'Break-Even Month',
+                    value: results.BreakEvenMonth ? `Month ${results.BreakEvenMonth}` : 'Not Achieved',
+                    class: results.BreakEvenMonth ? 'positive' : 'negative',
+                    tooltip: 'The first month when your business generates positive cash flow without relying on external funding.'
+                },
+                {
+                    title: 'Peak Monthly Burn Rate',
+                    value: `$${maxBurnRate.toLocaleString()}`,
+                    class: 'negative',
+                    tooltip: 'Highest monthly cash burn rate during the projection period. This represents your maximum monthly funding requirement.'
+                },
+                {
+                    title: 'Total Funding Used',
+                    value: `$${totalFundingUsed.toLocaleString()}`,
+                    class: totalFundingUsed > 0 ? 'warning' : 'positive',
+                    tooltip: 'Total amount of funding consumed during the projection period to cover negative cash flows.'
+                },
+                {
+                    title: 'Remaining Funding',
+                    value: `$${remainingFunding.toLocaleString()}`,
+                    class: remainingFunding > 50000 ? 'positive' : remainingFunding > 0 ? 'warning' : 'negative',
+                    tooltip: 'Funding remaining at the end of the projection period. Low values indicate need for additional funding.'
+                },
+                {
+                    title: 'Final Monthly Revenue',
+                    value: `$${totalRevenue.toLocaleString()}`,
+                    class: 'positive',
+                    tooltip: 'Monthly recurring revenue at the end of the projection period, showing your revenue growth trajectory.'
+                },
+                {
+                    title: 'Final Monthly Cash Flow',
+                    value: `$${finalCashFlow.toLocaleString()}`,
+                    class: finalCashFlow > 0 ? 'positive' : 'negative',
+                    tooltip: 'Net cash flow in the final month. Positive values indicate profitability and sustainable operations.'
+                }
+            ];
+
+            // Add funding exhaustion warning if applicable
+            if (results.FundingExhausted) {
+                cards.unshift({
+                    title: 'Funding Exhausted',
+                    value: `Month ${results.FundingExhaustedMonth}`,
+                    class: 'negative',
+                    tooltip: 'The month when available funding is completely depleted. You will need additional funding or revenue growth to continue operations.'
+                });
             }
-            
-            let metricsHTML = `
-                <div class="funding-metric">
-                    <strong>$${totalFundingUsed.toLocaleString()}</strong>
-                    <span>Total Funding Used</span>
+
+            summaryContainer.innerHTML = cards.map(card => `
+                <div class="summary-card ${card.class}">
+                    <h3>
+                        ${card.title}
+                        <div class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">${card.tooltip}</span>
+                        </div>
+                    </h3>
+                    <div class="value">${card.value}</div>
                 </div>
-                <div class="funding-metric">
-                    <strong>$${finalRemainingFunding.toLocaleString()}</strong>
-                    <span>Remaining Funding</span>
-                </div>
-                <div class="funding-metric">
-                    <strong>$${maxMonthlyDrawdown.toLocaleString()}</strong>
-                    <span>Peak Monthly Drawdown (Month ${maxDrawdownMonth})</span>
-                </div>
-            `;
-            
-            if (breakEvenMonth) {
-                metricsHTML += `
-                    <div class="funding-metric">
-                        <strong>Month ${breakEvenMonth}</strong>
-                        <span>Break-Even Point</span>
-                    </div>
-                `;
-            } else {
-                metricsHTML += `
-                    <div class="funding-metric">
-                        <strong>Not Reached</strong>
-                        <span>Break-Even Point</span>
-                    </div>
-                `;
-            }
-            
-            if (fundingExhausted) {
-                metricsHTML += `
-                    <div class="funding-metric">
-                        <strong>Month ${fundingExhaustedMonth}</strong>
-                        <span>⚠️ Funding Exhausted</span>
-                    </div>
-                `;
-            }
-            
-            metricsDiv.innerHTML = metricsHTML;
-            summaryDiv.style.display = 'block';
+            `).join('');
         }
 
-        function createCharts(results, variableCosts) {
+        function createCharts(results, tiers) {
             // Destroy existing charts
             Object.values(charts).forEach(chart => {
                 if (chart) chart.destroy();
             });
+            charts = {};
 
-            // Financial Metrics Chart
-            const ctxFinancial = document.getElementById('financialMetrics').getContext('2d');
-            charts.financialMetrics = new Chart(ctxFinancial, {
+            const labels = results.Date;
+
+            // Financial Overview Chart
+            charts.financial = new Chart(document.getElementById('financial-chart'), {
                 type: 'line',
                 data: {
-                    labels: results.Date,
-                    datasets: [{
-                        label: 'Revenue',
-                        data: results.TotalRevenue,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }, {
-                        label: 'Total Expenses',
-                        data: results.TotalExpenses,
-                        borderColor: 'rgb(255, 99, 132)',
-                        tension: 0.1
-                    }, {
-                        label: 'Monthly Cash Flow',
-                        data: results.MonthlyCashFlow,
-                        borderColor: 'rgb(54, 162, 235)',
-                        tension: 0.1
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Total Revenue',
+                            data: results.TotalRevenue,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            fill: true
+                        },
+                        {
+                            label: 'Total Expenses',
+                            data: results.TotalExpenses,
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            fill: true
+                        },
+                        {
+                            label: 'Net Cash Flow',
+                            data: results.MonthlyCashFlow,
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            fill: true
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
                     plugins: {
-                        title: {
-                            display: false
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                                }
+                            }
                         }
                     }
                 }
             });
 
             // Expense Breakdown Chart
-            const ctxExpense = document.getElementById('expenseBreakdown').getContext('2d');
-            charts.expenseBreakdown = new Chart(ctxExpense, {
-                type: 'line',
+            charts.expenses = new Chart(document.getElementById('expenses-chart'), {
+                type: 'bar',
                 data: {
-                    labels: results.Date,
-                    datasets: [{
-                        label: 'Fixed Expenses',
-                        data: results.FixedExpenses,
-                        borderColor: 'rgb(153, 102, 255)',
-                        tension: 0.1
-                    }, {
-                        label: 'Flat Fee',
-                        data: results.FlatFee,
-                        borderColor: 'rgb(255, 159, 64)',
-                        tension: 0.1
-                    }, {
-                        label: 'Overage Costs',
-                        data: results.OverageCosts,
-                        borderColor: 'rgb(255, 205, 86)',
-                        tension: 0.1
-                    }, {
-                        label: 'CAC Costs',
-                        data: results.CACCosts,
-                        borderColor: 'rgb(255, 99, 132)',
-                        tension: 0.1
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Fixed Expenses',
+                            data: results.FixedExpenses,
+                            backgroundColor: '#6c757d'
+                        },
+                        {
+                            label: 'Variable Costs (Flat Fee)',
+                            data: results.FlatFee,
+                            backgroundColor: '#ffc107'
+                        },
+                        {
+                            label: 'Overage Costs',
+                            data: results.OverageCosts,
+                            backgroundColor: '#fd7e14'
+                        },
+                        {
+                            label: 'CAC Costs',
+                            data: results.CACCosts,
+                            backgroundColor: '#e83e8c'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
+                    scales: {
+                        x: { stacked: true },
+                        y: { 
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
                     plugins: {
-                        title: {
-                            display: false
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                                }
+                            }
                         }
                     }
                 }
             });
 
             // Burn Rate Chart
-            const ctxBurnRate = document.getElementById('burnRateChart').getContext('2d');
-            charts.burnRateChart = new Chart(ctxBurnRate, {
+            const cumulativeBurn = results.BurnRate.reduce((acc, burn, index) => {
+                acc.push((acc[index - 1] || 0) + burn);
+                return acc;
+            }, []);
+
+            charts.burnRate = new Chart(document.getElementById('burn-rate-chart'), {
                 type: 'line',
                 data: {
-                    labels: results.Date,
-                    datasets: [{
-                        label: 'Monthly Burn Rate',
-                        data: results.BurnRate,
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                        tension: 0.1,
-                        fill: true
-                    }, {
-                        label: 'Break-Even Line',
-                        data: new Array(results.Date.length).fill(0),
-                        borderColor: 'rgb(54, 162, 235)',
-                        borderDash: [5, 5],
-                        tension: 0.1
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Monthly Burn Rate',
+                            data: results.BurnRate,
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Cumulative Burn',
+                            data: cumulativeBurn,
+                            borderColor: '#6f42c1',
+                            backgroundColor: 'rgba(111, 66, 193, 0.1)',
+                            yAxisID: 'y1'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        title: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Burn Rate ($)'
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Cash Flow Chart with Funding
-            const ctxCashFlow = document.getElementById('cashFlowChart').getContext('2d');
-            charts.cashFlowChart = new Chart(ctxCashFlow, {
-                type: 'line',
-                data: {
-                    labels: results.Date,
-                    datasets: [{
-                        label: 'Monthly Cash Flow (Before Funding)',
-                        data: results.MonthlyCashFlow,
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                        tension: 0.1,
-                        fill: true
-                    }, {
-                        label: 'Cash Position (After Funding)',
-                        data: results.CashPosition,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }, {
-                        label: 'Break-Even Line',
-                        data: new Array(results.Date.length).fill(0),
-                        borderColor: 'rgb(54, 162, 235)',
-                        borderDash: [5, 5],
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: false
-                        }
-                    }
-                }
-            });
-
-            // Funding Drawdown Chart
-            const ctxFunding = document.getElementById('fundingChart').getContext('2d');
-            charts.fundingChart = new Chart(ctxFunding, {
-                type: 'bar',
-                data: {
-                    labels: results.Date,
-                    datasets: [{
-                        label: 'Monthly Funding Drawdown',
-                        data: results.FundingDrawdown,
-                        backgroundColor: 'rgba(255, 159, 64, 0.6)',
-                        borderColor: 'rgb(255, 159, 64)',
-                        borderWidth: 1,
-                        yAxisID: 'y'
-                    }, {
-                        label: 'Remaining Funding',
-                        data: results.RemainingFunding,
-                        type: 'line',
-                        borderColor: 'rgb(54, 162, 235)',
-                        tension: 0.1,
-                        yAxisID: 'y1'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: false
-                        }
-                    },
                     scales: {
                         y: {
                             type: 'linear',
                             display: true,
                             position: 'left',
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Monthly Drawdown ($)'
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
                             }
                         },
                         y1: {
@@ -1197,123 +999,280 @@
                             display: true,
                             position: 'right',
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Remaining Funding ($)'
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
                             },
                             grid: {
                                 drawOnChartArea: false,
                             },
                         }
-                    }
-                }
-            });
-
-            // User Counts Chart
-            const ctxUsers = document.getElementById('userCounts').getContext('2d');
-            charts.userCounts = new Chart(ctxUsers, {
-                type: 'line',
-                data: {
-                    labels: results.Date,
-                    datasets: [{
-                        label: 'Acquaintance Users',
-                        data: results.AcquaintanceUsers,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }, {
-                        label: 'Friend Users',
-                        data: results.FriendUsers,
-                        borderColor: 'rgb(255, 99, 132)',
-                        tension: 0.1
-                    }, {
-                        label: 'Best Friend Users',
-                        data: results.BestFriendUsers,
-                        borderColor: 'rgb(54, 162, 235)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
+                    },
                     plugins: {
-                        title: {
-                            display: false
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                                }
+                            }
                         }
                     }
                 }
             });
 
-            // Minutes Usage Chart
-            const ctxMinutes = document.getElementById('minutesUsage').getContext('2d');
-            charts.minutesUsage = new Chart(ctxMinutes, {
+            // Cash Flow with Funding Chart
+            charts.cashFlow = new Chart(document.getElementById('cash-flow-chart'), {
                 type: 'line',
                 data: {
-                    labels: results.Date,
-                    datasets: [{
-                        label: 'Total Minutes Used',
-                        data: results.TotalMinutesUsed,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }, {
-                        label: 'Included Minutes Threshold',
-                        data: new Array(results.Date.length).fill(variableCosts.includedMinutes),
-                        borderColor: 'rgb(255, 99, 132)',
-                        borderDash: [5, 5],
-                        tension: 0.1
-                    }, {
-                        label: 'Overage Minutes',
-                        data: results.OverageMinutes,
-                        borderColor: 'rgb(255, 159, 64)',
-                        tension: 0.1
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Monthly Cash Flow (Before Funding)',
+                            data: results.MonthlyCashFlow,
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            fill: true
+                        },
+                        {
+                            label: 'Cash Position (After Funding)',
+                            data: results.CashPosition,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            fill: true
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
                     plugins: {
-                        title: {
-                            display: false
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Funding Chart
+            charts.funding = new Chart(document.getElementById('funding-chart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Monthly Funding Drawdown',
+                            data: results.FundingDrawdown,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Remaining Funding',
+                            data: results.RemainingFunding,
+                            borderColor: '#17a2b8',
+                            backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Users Chart
+            const userDatasets = tiers.map((tier, index) => {
+                const colors = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#fd7e14'];
+                return {
+                    label: `${tier.name} Users`,
+                    data: results[`${tier.name}Users`],
+                    borderColor: colors[index % colors.length],
+                    backgroundColor: colors[index % colors.length] + '20',
+                    fill: false
+                };
+            });
+
+            charts.users = new Chart(document.getElementById('users-chart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: userDatasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' users';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Usage Chart
+            charts.usage = new Chart(document.getElementById('usage-chart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Total Minutes Used',
+                            data: results.TotalMinutesUsed,
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Overage Minutes',
+                            data: results.OverageMinutes,
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' min';
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' min';
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' minutes';
+                                }
+                            }
                         }
                     }
                 }
             });
 
             // CAC Chart
-            const ctxCAC = document.getElementById('cacChart').getContext('2d');
-            charts.cacChart = new Chart(ctxCAC, {
-                type: 'bar',
+            const cumulativeCAC = results.CACCosts.reduce((acc, cac, index) => {
+                acc.push((acc[index - 1] || 0) + cac);
+                return acc;
+            }, []);
+
+            charts.cac = new Chart(document.getElementById('cac-chart'), {
+                type: 'line',
                 data: {
-                    labels: results.Date,
-                    datasets: [{
-                        label: 'New Users Acquired',
-                        data: results.NewUsersAcquired,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgb(75, 192, 192)',
-                        borderWidth: 1,
-                        yAxisID: 'y'
-                    }, {
-                        label: 'CAC Costs',
-                        data: results.CACCosts,
-                        type: 'line',
-                        borderColor: 'rgb(255, 99, 132)',
-                        tension: 0.1,
-                        yAxisID: 'y1'
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Monthly CAC Spend',
+                            data: results.CACCosts,
+                            borderColor: '#e83e8c',
+                            backgroundColor: 'rgba(232, 62, 140, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Cumulative CAC Investment',
+                            data: cumulativeCAC,
+                            borderColor: '#6f42c1',
+                            backgroundColor: 'rgba(111, 66, 193, 0.1)',
+                            yAxisID: 'y1'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        title: {
-                            display: false
-                        }
-                    },
                     scales: {
                         y: {
                             type: 'linear',
                             display: true,
                             position: 'left',
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'New Users'
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
                             }
                         },
                         y1: {
@@ -1321,56 +1280,28 @@
                             display: true,
                             position: 'right',
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'CAC Costs ($)'
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
                             },
                             grid: {
                                 drawOnChartArea: false,
                             },
                         }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
                     }
                 }
             });
         }
-
-        window.updateProjections = function() {
-            // Create subscription tiers from form inputs
-            const basicTier = createSubscriptionTier('Acquaintance');
-            const premiumTier = createSubscriptionTier('Friend');
-            const ultraTier = createSubscriptionTier('BestFriend');
-
-            // Create variable costs structure
-            const variableCosts = new VariableCostStructure(
-                Number(getInputValue('flat-fee')),
-                Number(getInputValue('included-minutes')),
-                Number(getInputValue('overage-cost'))
-            );
-
-            // Get monthly fixed expenses from dynamic form
-            const monthlyFixedExpenses = getExpenses();
-
-            // Create projection model
-            const projection = new FinancialProjection(
-                [basicTier, premiumTier, ultraTier],
-                monthlyFixedExpenses,
-                variableCosts,
-                getInputValue('start-date'),
-                Number(getInputValue('num-months')),
-                Number(getInputValue('available-funding')),
-                Number(getInputValue('cac-per-user')),
-                Number(getInputValue('startup-costs'))
-            );
-
-            // Calculate and update charts
-            const results = projection.calculateProjections();
-            createCharts(results, variableCosts);
-            updateBurnRateSummary(results);
-            updateFundingSummary(results);
-        };
-
-        // Initial chart creation
-        updateProjections();
     </script>
 </body>
 </html>

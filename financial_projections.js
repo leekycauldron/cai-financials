@@ -8,9 +8,9 @@ class VariableCostStructure {
 }
 
 class SubscriptionTier {
-    constructor(name, minuteQuota, pricePerMonth, initialUserCount, churnRate, growthRate, usageRate = 0.8) {
+    constructor(name, dailyMinuteQuota, pricePerMonth, initialUserCount, churnRate, growthRate, usageRate = 0.8) {
         this.name = name;
-        this.minuteQuota = minuteQuota;
+        this.dailyMinuteQuota = dailyMinuteQuota;
         this.pricePerMonth = pricePerMonth;
         this.initialUserCount = initialUserCount;
         this.churnRate = churnRate;
@@ -94,7 +94,9 @@ class FinancialProjection {
 
                 // Calculate revenue and minutes used
                 const monthlyRevenue = currentUsers * tier.pricePerMonth;
-                const monthlyMinutesUsed = currentUsers * tier.minuteQuota * tier.usageRate;
+                
+                // Convert daily quota to monthly usage (assuming 30 days per month)
+                const monthlyMinutesUsed = currentUsers * tier.dailyMinuteQuota * 30 * tier.usageRate;
 
                 tierUsers.push(currentUsers);
                 tierRevenue.push(monthlyRevenue);
