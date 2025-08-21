@@ -8,7 +8,7 @@ class VariableCostStructure {
 }
 
 class SubscriptionTier {
-    constructor(name, dailyMinuteQuota, pricePerMonth, initialUserCount, churnRate, growthRate, usageRate = 0.8) {
+    constructor(name, dailyMinuteQuota, pricePerMonth, initialUserCount, churnRate, growthRate, usageRate = 0.8, churnRateChange = 0, growthRateChange = 0) {
         this.name = name;
         this.dailyMinuteQuota = dailyMinuteQuota;
         this.pricePerMonth = pricePerMonth;
@@ -16,6 +16,8 @@ class SubscriptionTier {
         this.churnRate = churnRate;
         this.growthRate = growthRate;
         this.usageRate = usageRate;
+        this.churnRateChange = churnRateChange;
+        this.growthRateChange = growthRateChange;
     }
 }
 
@@ -87,9 +89,13 @@ class FinancialProjection {
 
             // Calculate monthly users and revenue for this tier
             for (let month = 0; month < this.numMonths; month++) {
+                // Evolve rates monthly (clamped to [0, 1])
+                const churnRate = Math.max(0, Math.min(1, tier.churnRate + month * (tier.churnRateChange || 0)));
+                const growthRate = Math.max(0, Math.min(1, tier.growthRate + month * (tier.growthRateChange || 0)));
+
                 // Calculate churned and new users
-                const churnedUsers = Math.floor(currentUsers * tier.churnRate);
-                const newUsers = Math.floor(currentUsers * tier.growthRate);
+                const churnedUsers = Math.floor(currentUsers * churnRate);
+                const newUsers = Math.floor(currentUsers * growthRate);
                 currentUsers = currentUsers - churnedUsers + newUsers;
 
                 // Calculate revenue and minutes used
