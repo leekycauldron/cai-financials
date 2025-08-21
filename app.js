@@ -21,6 +21,8 @@ const defaultValues = {
     'basic-usage': 80,
     'basic-churn-change': 0,
     'basic-growth-change': 0,
+    'basic-churn-stabilized': 5,
+    'basic-growth-stabilized': 10,
     
     // Pro tier
     'pro-quota': 100,
@@ -31,6 +33,8 @@ const defaultValues = {
     'pro-usage': 85,
     'pro-churn-change': 0,
     'pro-growth-change': 0,
+    'pro-churn-stabilized': 3,
+    'pro-growth-stabilized': 15,
     
     // Enterprise tier
     'enterprise-quota': 500,
@@ -41,6 +45,8 @@ const defaultValues = {
     'enterprise-usage': 90,
     'enterprise-churn-change': 0,
     'enterprise-growth-change': 0,
+    'enterprise-churn-stabilized': 2,
+    'enterprise-growth-stabilized': 20,
     
     // Fixed expenses
     'salaries': 25000,
@@ -598,6 +604,8 @@ function getFormValues() {
         basicUsage: getValue('basic-usage') / 100,
         basicChurnChange: getValue('basic-churn-change') / 100,
         basicGrowthChange: getValue('basic-growth-change') / 100,
+        basicChurnStabilized: getValue('basic-churn-stabilized') / 100,
+        basicGrowthStabilized: getValue('basic-growth-stabilized') / 100,
         
         // Pro tier
         proQuota: getValue('pro-quota'),
@@ -608,6 +616,8 @@ function getFormValues() {
         proUsage: getValue('pro-usage') / 100,
         proChurnChange: getValue('pro-churn-change') / 100,
         proGrowthChange: getValue('pro-growth-change') / 100,
+        proChurnStabilized: getValue('pro-churn-stabilized') / 100,
+        proGrowthStabilized: getValue('pro-growth-stabilized') / 100,
         
         // Enterprise tier
         enterpriseQuota: getValue('enterprise-quota'),
@@ -618,6 +628,8 @@ function getFormValues() {
         enterpriseUsage: getValue('enterprise-usage') / 100,
         enterpriseChurnChange: getValue('enterprise-churn-change') / 100,
         enterpriseGrowthChange: getValue('enterprise-growth-change') / 100,
+        enterpriseChurnStabilized: getValue('enterprise-churn-stabilized') / 100,
+        enterpriseGrowthStabilized: getValue('enterprise-growth-stabilized') / 100,
         
         // Fixed expenses
         salaries: getValue('salaries'),
@@ -645,9 +657,9 @@ function updateProjections() {
     
     // Create subscription tiers
     const subscriptionTiers = [
-        new SubscriptionTier('Basic', values.basicQuota, values.basicPrice, values.basicUsers, values.basicChurn, values.basicGrowth, values.basicUsage, values.basicChurnChange, values.basicGrowthChange),
-        new SubscriptionTier('Pro', values.proQuota, values.proPrice, values.proUsers, values.proChurn, values.proGrowth, values.proUsage, values.proChurnChange, values.proGrowthChange),
-        new SubscriptionTier('Enterprise', values.enterpriseQuota, values.enterprisePrice, values.enterpriseUsers, values.enterpriseChurn, values.enterpriseGrowth, values.enterpriseUsage, values.enterpriseChurnChange, values.enterpriseGrowthChange)
+        new SubscriptionTier('Basic', values.basicQuota, values.basicPrice, values.basicUsers, values.basicChurn, values.basicGrowth, values.basicUsage, values.basicChurnChange, values.basicGrowthChange, values.basicChurnStabilized, values.basicGrowthStabilized),
+        new SubscriptionTier('Pro', values.proQuota, values.proPrice, values.proUsers, values.proChurn, values.proGrowth, values.proUsage, values.proChurnChange, values.proGrowthChange, values.proChurnStabilized, values.proGrowthStabilized),
+        new SubscriptionTier('Enterprise', values.enterpriseQuota, values.enterprisePrice, values.enterpriseUsers, values.enterpriseChurn, values.enterpriseGrowth, values.enterpriseUsage, values.enterpriseChurnChange, values.enterpriseGrowthChange, values.enterpriseChurnStabilized, values.enterpriseGrowthStabilized)
     ];
     
     // Create fixed expenses object

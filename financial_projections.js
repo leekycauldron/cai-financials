@@ -8,7 +8,7 @@ class VariableCostStructure {
 }
 
 class SubscriptionTier {
-    constructor(name, dailyMinuteQuota, pricePerMonth, initialUserCount, churnRate, growthRate, usageRate = 0.8, churnRateChange = 0, growthRateChange = 0) {
+    constructor(name, dailyMinuteQuota, pricePerMonth, initialUserCount, churnRate, growthRate, usageRate = 0.8, churnRateChange = 0, growthRateChange = 0, churnRateStabilized = null, growthRateStabilized = null) {
         this.name = name;
         this.dailyMinuteQuota = dailyMinuteQuota;
         this.pricePerMonth = pricePerMonth;
@@ -18,6 +18,8 @@ class SubscriptionTier {
         this.usageRate = usageRate;
         this.churnRateChange = churnRateChange;
         this.growthRateChange = growthRateChange;
+        this.churnRateStabilized = churnRateStabilized;
+        this.growthRateStabilized = growthRateStabilized;
     }
 }
 
@@ -89,9 +91,34 @@ class FinancialProjection {
 
             // Calculate monthly users and revenue for this tier
             for (let month = 0; month < this.numMonths; month++) {
-                // Evolve rates monthly (clamped to [0, 1])
-                const churnRate = Math.max(0, Math.min(1, tier.churnRate + month * (tier.churnRateChange || 0)));
-                const growthRate = Math.max(0, Math.min(1, tier.growthRate + month * (tier.growthRateChange || 0)));
+                // Evolve rates monthly with stabilization bounds
+                let churnRate = tier.churnRate + month * (tier.churnRateChange || 0);
+                let growthRate = tier.growthRate + month * (tier.growthRateChange || 0);
+                
+                // Apply stabilization bounds if set
+                if (tier.churnRateStabilized !== null) {
+                    // For churn: if rate is decreasing (negative change), don't go below stabilized
+                    // If rate is increasing (positive change), don't go above stabilized
+                    if (tier.churnRateChange < 0) {
+                        churnRate = Math.max(churnRate, tier.churnRateStabilized);
+                    } else if (tier.churnRateChange > 0) {
+                        churnRate = Math.min(churnRate, tier.churnRateStabilized);
+                    }
+                }
+                
+                if (tier.growthRateStabilized !== null) {
+                    // For growth: if rate is decreasing (negative change), don't go below stabilized
+                    // If rate is increasing (positive change), don't go above stabilized
+                    if (tier.growthRateChange < 0) {
+                        growthRate = Math.max(growthRate, tier.growthRateStabilized);
+                    } else if (tier.growthRateChange > 0) {
+                        growthRate = Math.min(growthRate, tier.growthRateStabilized);
+                    }
+                }
+                
+                // Final clamp to [0, 1]
+                churnRate = Math.max(0, Math.min(1, churnRate));
+                growthRate = Math.max(0, Math.min(1, growthRate));
 
                 // Calculate churned and new users
                 const churnedUsers = Math.floor(currentUsers * churnRate);
